@@ -1,6 +1,6 @@
 import { Message } from "../../domain/models/Message";
 
-interface ChatRepository {
-    getMessages(): Promise<Message[]>;
+export interface ChatRepository {
+    getInitialMessages(): Promise<Message[]>;
     subscribeToMessages(cb: (msg: Message) => void): () => void;
 }
