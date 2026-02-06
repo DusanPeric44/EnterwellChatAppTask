@@ -1,0 +1,602 @@
+[
+    {
+        "id": 1,
+        "type": 0,
+        "from": 0,
+        "text": "Hej 👋",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 0,
+            "count": 1
+        }
+    },
+    {
+        "id": 2,
+        "type": 0,
+        "from": 1,
+        "text": "Ćao, šta ima?",
+        "url": null,
+        "replyTo": 1,
+        "reactions": {
+            "value": 1,
+            "count": 1
+        }
+    },
+    {
+        "id": 3,
+        "type": 0,
+        "from": 0,
+        "text": "Radim na chat aplikaciji",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 2,
+            "count": 2
+        }
+    },
+    {
+        "id": 4,
+        "type": 0,
+        "from": 1,
+        "text": "Top 🔥",
+        "url": null,
+        "replyTo": 3,
+        "reactions": {
+            "value": 3,
+            "count": 1
+        }
+    },
+    {
+        "id": 5,
+        "type": 1,
+        "from": 0,
+        "text": null,
+        "url": "https://example.com/img/1.png",
+        "replyTo": null,
+        "reactions": {
+            "value": 4,
+            "count": 2
+        }
+    },
+    {
+        "id": 6,
+        "type": 0,
+        "from": 1,
+        "text": "Lijep UI",
+        "url": null,
+        "replyTo": 5,
+        "reactions": {
+            "value": 0,
+            "count": 1
+        }
+    },
+    {
+        "id": 7,
+        "type": 0,
+        "from": 0,
+        "text": "Hvala 😄",
+        "url": null,
+        "replyTo": 6,
+        "reactions": {
+            "value": 1,
+            "count": 1
+        }
+    },
+    {
+        "id": 8,
+        "type": 0,
+        "from": 1,
+        "text": "Jesi radio reactions?",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 2,
+            "count": 1
+        }
+    },
+    {
+        "id": 9,
+        "type": 0,
+        "from": 0,
+        "text": "Da, ima ih 6",
+        "url": null,
+        "replyTo": 8,
+        "reactions": {
+            "value": 3,
+            "count": 2
+        }
+    },
+    {
+        "id": 10,
+        "type": 0,
+        "from": 1,
+        "text": "Nice 👌",
+        "url": null,
+        "replyTo": 9,
+        "reactions": {
+            "value": 4,
+            "count": 1
+        }
+    },
+    {
+        "id": 11,
+        "type": 1,
+        "from": 1,
+        "text": null,
+        "url": "https://example.com/img/2.png",
+        "replyTo": null,
+        "reactions": {
+            "value": 5,
+            "count": 3
+        }
+    },
+    {
+        "id": 12,
+        "type": 0,
+        "from": 0,
+        "text": "Ovo si ti radio?",
+        "url": null,
+        "replyTo": 11,
+        "reactions": {
+            "value": 0,
+            "count": 1
+        }
+    },
+    {
+        "id": 13,
+        "type": 0,
+        "from": 1,
+        "text": "Da, mockup",
+        "url": null,
+        "replyTo": 12,
+        "reactions": {
+            "value": 1,
+            "count": 1
+        }
+    },
+    {
+        "id": 14,
+        "type": 0,
+        "from": 0,
+        "text": "Baš dobro izgleda",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 2,
+            "count": 2
+        }
+    },
+    {
+        "id": 15,
+        "type": 0,
+        "from": 1,
+        "text": "Hvala puno",
+        "url": null,
+        "replyTo": 14,
+        "reactions": {
+            "value": 3,
+            "count": 1
+        }
+    },
+    {
+        "id": 16,
+        "type": 0,
+        "from": 0,
+        "text": "Kako ide backend?",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 4,
+            "count": 1
+        }
+    },
+    {
+        "id": 17,
+        "type": 0,
+        "from": 1,
+        "text": "SignalR radi bez problema",
+        "url": null,
+        "replyTo": 16,
+        "reactions": {
+            "value": 5,
+            "count": 2
+        }
+    },
+    {
+        "id": 18,
+        "type": 0,
+        "from": 0,
+        "text": "Odlično 💪",
+        "url": null,
+        "replyTo": 17,
+        "reactions": {
+            "value": 0,
+            "count": 1
+        }
+    },
+    {
+        "id": 19,
+        "type": 1,
+        "from": 0,
+        "text": null,
+        "url": "https://example.com/img/3.png",
+        "replyTo": null,
+        "reactions": {
+            "value": 1,
+            "count": 2
+        }
+    },
+    {
+        "id": 20,
+        "type": 0,
+        "from": 1,
+        "text": "Ovaj dio mi se sviđa",
+        "url": null,
+        "replyTo": 19,
+        "reactions": {
+            "value": 2,
+            "count": 1
+        }
+    },
+    {
+        "id": 21,
+        "type": 0,
+        "from": 0,
+        "text": "Planiram i seen status",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 3,
+            "count": 1
+        }
+    },
+    {
+        "id": 22,
+        "type": 0,
+        "from": 1,
+        "text": "To je must-have",
+        "url": null,
+        "replyTo": 21,
+        "reactions": {
+            "value": 4,
+            "count": 1
+        }
+    },
+    {
+        "id": 23,
+        "type": 0,
+        "from": 0,
+        "text": "I typing indikator",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 5,
+            "count": 1
+        }
+    },
+    {
+        "id": 24,
+        "type": 0,
+        "from": 1,
+        "text": "Kao WhatsApp 😄",
+        "url": null,
+        "replyTo": 23,
+        "reactions": {
+            "value": 0,
+            "count": 2
+        }
+    },
+    {
+        "id": 25,
+        "type": 0,
+        "from": 0,
+        "text": "Upravo to",
+        "url": null,
+        "replyTo": 24,
+        "reactions": {
+            "value": 1,
+            "count": 1
+        }
+    },
+    {
+        "id": 26,
+        "type": 1,
+        "from": 1,
+        "text": null,
+        "url": "https://example.com/img/4.png",
+        "replyTo": null,
+        "reactions": {
+            "value": 2,
+            "count": 2
+        }
+    },
+    {
+        "id": 27,
+        "type": 0,
+        "from": 0,
+        "text": "Nova verzija?",
+        "url": null,
+        "replyTo": 26,
+        "reactions": {
+            "value": 3,
+            "count": 1
+        }
+    },
+    {
+        "id": 28,
+        "type": 0,
+        "from": 1,
+        "text": "Da, malo refaktorisana",
+        "url": null,
+        "replyTo": 27,
+        "reactions": {
+            "value": 4,
+            "count": 1
+        }
+    },
+    {
+        "id": 29,
+        "type": 0,
+        "from": 0,
+        "text": "Primijeti se",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 5,
+            "count": 1
+        }
+    },
+    {
+        "id": 30,
+        "type": 0,
+        "from": 1,
+        "text": "Drago mi je",
+        "url": null,
+        "replyTo": 29,
+        "reactions": {
+            "value": 0,
+            "count": 1
+        }
+    },
+    {
+        "id": 31,
+        "type": 0,
+        "from": 0,
+        "text": "Kad je demo?",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 1,
+            "count": 1
+        }
+    },
+    {
+        "id": 32,
+        "type": 0,
+        "from": 1,
+        "text": "Sutra popodne",
+        "url": null,
+        "replyTo": 31,
+        "reactions": {
+            "value": 2,
+            "count": 1
+        }
+    },
+    {
+        "id": 33,
+        "type": 0,
+        "from": 0,
+        "text": "Super, vidimo se",
+        "url": null,
+        "replyTo": 32,
+        "reactions": {
+            "value": 3,
+            "count": 1
+        }
+    },
+    {
+        "id": 34,
+        "type": 0,
+        "from": 1,
+        "text": "Vidimo se 👋",
+        "url": null,
+        "replyTo": 33,
+        "reactions": {
+            "value": 4,
+            "count": 1
+        }
+    },
+    {
+        "id": 35,
+        "type": 0,
+        "from": 0,
+        "text": "Pozz",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 5,
+            "count": 1
+        }
+    },
+    {
+        "id": 36,
+        "type": 0,
+        "from": 1,
+        "text": "Ajde",
+        "url": null,
+        "replyTo": 35,
+        "reactions": {
+            "value": 0,
+            "count": 1
+        }
+    },
+    {
+        "id": 37,
+        "type": 0,
+        "from": 0,
+        "text": "Čujemo se",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 1,
+            "count": 1
+        }
+    },
+    {
+        "id": 38,
+        "type": 1,
+        "from": 0,
+        "text": null,
+        "url": "https://example.com/img/5.png",
+        "replyTo": null,
+        "reactions": {
+            "value": 2,
+            "count": 2
+        }
+    },
+    {
+        "id": 39,
+        "type": 0,
+        "from": 1,
+        "text": "😂",
+        "url": null,
+        "replyTo": 38,
+        "reactions": {
+            "value": 3,
+            "count": 3
+        }
+    },
+    {
+        "id": 40,
+        "type": 0,
+        "from": 0,
+        "text": "Haha",
+        "url": null,
+        "replyTo": 39,
+        "reactions": {
+            "value": 4,
+            "count": 1
+        }
+    },
+    {
+        "id": 41,
+        "type": 0,
+        "from": 1,
+        "text": "Ajmo sutra dalje",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 5,
+            "count": 1
+        }
+    },
+    {
+        "id": 42,
+        "type": 0,
+        "from": 0,
+        "text": "Dogovoreno",
+        "url": null,
+        "replyTo": 41,
+        "reactions": {
+            "value": 0,
+            "count": 1
+        }
+    },
+    {
+        "id": 43,
+        "type": 0,
+        "from": 1,
+        "text": "Laku noć",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 1,
+            "count": 1
+        }
+    },
+    {
+        "id": 44,
+        "type": 0,
+        "from": 0,
+        "text": "Laku noć 🌙",
+        "url": null,
+        "replyTo": 43,
+        "reactions": {
+            "value": 2,
+            "count": 1
+        }
+    },
+    {
+        "id": 45,
+        "type": 0,
+        "from": 1,
+        "text": "😴",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 3,
+            "count": 1
+        }
+    },
+    {
+        "id": 46,
+        "type": 0,
+        "from": 0,
+        "text": "Zzz",
+        "url": null,
+        "replyTo": 45,
+        "reactions": {
+            "value": 4,
+            "count": 1
+        }
+    },
+    {
+        "id": 47,
+        "type": 0,
+        "from": 1,
+        "text": "😂",
+        "url": null,
+        "replyTo": 46,
+        "reactions": {
+            "value": 5,
+            "count": 1
+        }
+    },
+    {
+        "id": 48,
+        "type": 0,
+        "from": 0,
+        "text": "Ok stvarno idem",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 0,
+            "count": 1
+        }
+    },
+    {
+        "id": 49,
+        "type": 0,
+        "from": 1,
+        "text": "Ajde 😂",
+        "url": null,
+        "replyTo": 48,
+        "reactions": {
+            "value": 1,
+            "count": 1
+        }
+    },
+    {
+        "id": 50,
+        "type": 0,
+        "from": 0,
+        "text": "Gasim app",
+        "url": null,
+        "replyTo": null,
+        "reactions": {
+            "value": 2,
+            "count": 1
+        }
+    }
+]
