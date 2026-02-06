@@ -52,7 +52,7 @@
         "type": 1,
         "from": 0,
         "text": null,
-        "url": "https://example.com/img/1.png",
+        "url": "https://picsum.photos/200",
         "replyTo": null,
         "reactions": {
             "value": 4,
@@ -124,7 +124,7 @@
         "type": 1,
         "from": 1,
         "text": null,
-        "url": "https://example.com/img/2.png",
+        "url": "https://picsum.photos/200",
         "replyTo": null,
         "reactions": {
             "value": 5,
@@ -220,7 +220,7 @@
         "type": 1,
         "from": 0,
         "text": null,
-        "url": "https://example.com/img/3.png",
+        "url": "https://picsum.photos/200",
         "replyTo": null,
         "reactions": {
             "value": 1,
@@ -304,7 +304,7 @@
         "type": 1,
         "from": 1,
         "text": null,
-        "url": "https://example.com/img/4.png",
+        "url": "https://picsum.photos/200",
         "replyTo": null,
         "reactions": {
             "value": 2,
@@ -448,7 +448,7 @@
         "type": 1,
         "from": 0,
         "text": null,
-        "url": "https://example.com/img/5.png",
+        "url": "https://picsum.photos/200",
         "replyTo": null,
         "reactions": {
             "value": 2,

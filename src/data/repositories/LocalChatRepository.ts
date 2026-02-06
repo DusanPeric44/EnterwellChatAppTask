@@ -1,40 +1,59 @@
 import { Message } from "../../domain/models/Message";
 import { ChatRepository } from "./ChatRepository";
-import messagesData from '../sources/localMessages.json';
+import messagesData from "../sources/localMessages.json";
 
 export class LocalChatRepository implements ChatRepository {
-    private messages: Message[] = (messagesData as any[]).map((m) => ({
-        ...m,
-        type: m.type as 0 | 1,
-        from: m.from as 0 | 1,
-        reactions: Array.isArray(m.reactions) ? m.reactions : [m.reactions],
-    }));
+    private messages: Message[] = [];
     private intervalId: NodeJS.Timeout | null = null;
+    private nextId: number = 1;
 
     async getInitialMessages(): Promise<Message[]> {
         return this.messages;
     }
 
     subscribeToMessages(onMessage: (msg: Message) => void): () => void {
-        this.intervalId = setInterval(() => {
-            const randomMessage = this.getRandomMessage();
-            this.messages = [...this.messages, randomMessage];
-            onMessage(randomMessage);
-        }, this.getRandomDelay());
+        const scheduleNext = () => {
+            const nextMessage = this.getNextMessage();
+            if (!nextMessage) {
+                return;
+            }
+            this.messages = [...this.messages, nextMessage];
+            onMessage(nextMessage);
+            this.intervalId = setTimeout(scheduleNext, this.getRandomDelay());
+        };
+
+        this.intervalId = setTimeout(scheduleNext, this.getRandomDelay());
 
         return () => {
             if (this.intervalId) {
-                clearInterval(this.intervalId);
+                clearTimeout(this.intervalId);
             }
         };
     }
 
     private getRandomDelay() {
-        return Math.random() * 4000 + 1000; // Delay između 1 i 5 sekunda
+        return Math.random() * 4000 + 1000;
     }
 
-    private getRandomMessage() {
-        const randomIndex = Math.floor(Math.random() * this.messages.length);
-        return this.messages[randomIndex];
+    private getNextMessage(): Message | undefined {
+        const nextMessage = messagesData.find((m) => m.id === this.nextId);
+        if (!nextMessage) {
+            return undefined;
+        }
+        this.nextId++;
+
+        return this.mapToMessage(nextMessage);
+    }
+
+    private mapToMessage(data: any): Message | undefined {
+        return {
+            id: data.id,
+            type: data.type,
+            from: data.from,
+            text: data.text,
+            url: data.url,
+            replyTo: data.replyTo,
+            reactions: data.reactions,
+        };
     }
 }
