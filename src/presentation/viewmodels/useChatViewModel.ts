@@ -20,7 +20,7 @@ const useChatViewModel = () => {
     const onReact = (message: Message, reaction: { value: number; count: number }) => {
         setMessages((prevMessages) =>
             prevMessages.map((m) =>
-                m.id === message.id ? { ...m, reactions: [...m.reactions, reaction] } : m
+                m.id === message.id ? { ...m, reactions: { ...m.reactions, ...reaction } } : m
             )
         );
     };
@@ -50,7 +50,7 @@ const useChatViewModel = () => {
                 text: trimmed,
                 url: null,
                 replyTo: replyToId ?? null,
-                reactions: [],
+                reactions: { value: 0, count: 0 },
             };
 
             return [...prevMessages, newMessage];

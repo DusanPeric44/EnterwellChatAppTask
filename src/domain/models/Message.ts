@@ -1,3 +1,5 @@
+import { ReactionType } from "../enums/ReactionType";
+
 export interface Message {
     id: number;
     type: 0 | 1;
@@ -5,8 +7,10 @@ export interface Message {
     text: string | null;
     url: string | null;
     replyTo: number | null;
-    reactions: {
-        value: number;
-        count: number;
-    }[];
+    reactions: Reaction;
+}
+
+export interface Reaction {
+    value: ReactionType;
+    count: number;
 }
