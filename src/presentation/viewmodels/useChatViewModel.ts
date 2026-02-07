@@ -17,10 +17,10 @@ const useChatViewModel = () => {
         return unsubscribe;
     }, []);
 
-    const onReact = (message: Message, reaction: { value: number; count: number }) => {
+    const onReact = (messageId: number, reaction: number) => {
         setMessages((prevMessages) =>
             prevMessages.map((m) =>
-                m.id === message.id ? { ...m, reactions: { ...m.reactions, ...reaction } } : m
+                m.id === messageId ? { ...m, reactions: { value: reaction, count: 1 } } : m
             )
         );
     };
@@ -38,10 +38,7 @@ const useChatViewModel = () => {
         }
 
         setMessages((prevMessages) => {
-            const nextId =
-                prevMessages.length > 0
-                    ? Math.max(...prevMessages.map((m) => m.id)) + 1
-                    : 1;
+            const nextId = Math.floor(Math.random() * 1000000) + 50;
 
             const newMessage: Message = {
                 id: nextId,

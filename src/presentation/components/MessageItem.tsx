@@ -1,86 +1,89 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Surface } from 'react-native-paper';
 import { Message } from '../../domain/models/Message';
 import { ReactionType } from '../../domain/enums/ReactionType';
+import { reactionIcons } from '../constants/reactionIcons';
 
 
 interface MessageItemProps {
     item: Message;
     replyMessage?: Message;
+    onLongPress?: (message: Message) => void;
 }
 
-const MessageItem: React.FC<MessageItemProps> = ({ item, replyMessage }) => {
+const MessageItem: React.FC<MessageItemProps> = ({ item, replyMessage, onLongPress }) => {
     const isOwn = item.from === 0;
 
-    const reactionIcons: Record<ReactionType, string> = {
-        [ReactionType.Like]: '👍',
-        [ReactionType.Love]: '❤️',
-        [ReactionType.Laugh]: '😂',
-        [ReactionType.Surprise]: '😮',
-        [ReactionType.Sad]: '😢',
-        [ReactionType.Angry]: '😡',
-    };
-
     return (
-        <View style={styles.messageContainer}>
-            <Surface
-                style={[
-                    styles.messageBubble,
-                    isOwn ? styles.ownMessage : styles.otherMessage,
-                ]}
-                elevation={1}
-            >
-                {replyMessage && (
-                    <View style={styles.replyContext}>
-                        <View style={styles.replyBar} />
-                        <View style={styles.replyContent}>
-                            <Text style={styles.replySender}>
-                                {replyMessage.from === 0 ? 'You' : 'Contact'}
-                            </Text>
-                            <Text style={styles.replyText} numberOfLines={1}>
-                                {replyMessage.type === 1
-                                    ? '[Photo]'
-                                    : replyMessage.text}
-                            </Text>
-                        </View>
-                    </View>
-                )}
-
-                {item.type === 0 && item.text && (
-                    <Text style={styles.messageText}>{item.text}</Text>
-                )}
-
-                {item.type === 1 && item.url && (
-                    <Image
-                        source={{ uri: item.url }}
-                        style={styles.messageImage}
-                    />
-                )}
-
-                {
-                    <View style={styles.reactionsContainer}>
-                        <View key={item.reactions.value} style={styles.reactionPill}>
-                            <Text style={styles.reactionEmoji}>
-                                {reactionIcons[item.reactions.value] ??
-                                    reactionIcons[ReactionType.Like]}
-                            </Text>
-                            {item.reactions.count > 1 && (
-                                <Text style={styles.reactionCount}>
-                                    {item.reactions.count}
+        <TouchableOpacity
+            style={styles.messageContainer}
+            onLongPress={() => onLongPress?.(item)}
+            activeOpacity={1}
+        >
+            <View style={styles.messageContainer}>
+                <Surface
+                    style={[
+                        styles.messageBubble,
+                        isOwn ? styles.ownMessage : styles.otherMessage,
+                    ]}
+                    elevation={1}
+                >
+                    {replyMessage && (
+                        <View style={styles.replyContext}>
+                            <View style={styles.replyBar} />
+                            <View style={styles.replyContent}>
+                                <Text style={styles.replySender}>
+                                    {replyMessage.from === 0 ? 'You' : 'Contact'}
                                 </Text>
-                            )}
+                                <Text style={styles.replyText} numberOfLines={1}>
+                                    {replyMessage.type === 1
+                                        ? '[Photo]'
+                                        : replyMessage.text}
+                                </Text>
+                            </View>
                         </View>
-                    </View>
-                }
-            </Surface>
-        </View>
+                    )}
+
+                    {item.type === 0 && item.text && (
+                        <Text style={styles.messageText}>{item.text}</Text>
+                    )}
+
+                    {item.type === 1 && item.url && (
+                        <Image
+                            source={{ uri: item.url }}
+                            style={styles.messageImage}
+                        />
+                    )}
+
+                    {item.reactions && (
+                        <View style={[styles.reactionsContainer,
+                        isOwn ? { right: 5 } : { left: 5 },
+                        ]}>
+                            <View key={item.reactions.value} style={styles.reactionPill}>
+                                <Text style={styles.reactionEmoji}>
+                                    {reactionIcons[item.reactions.value] ??
+                                        reactionIcons[ReactionType.Like]}
+                                </Text>
+                                {item.reactions.count > 1 && (
+                                    <Text style={styles.reactionCount}>
+                                        {item.reactions.count}
+                                    </Text>
+                                )}
+                            </View>
+                        </View>
+                    )}
+                </Surface>
+            </View>
+        </TouchableOpacity>
     );
 };
 
 const styles = StyleSheet.create({
     messageContainer: {
-        marginVertical: 4,
+        flex: 1,
+        width: '100%',
+        marginVertical: 8,
         alignItems: 'flex-start',
     },
     messageBubble: {
@@ -141,8 +144,7 @@ const styles = StyleSheet.create({
         gap: 4,
         marginTop: 4,
         position: 'absolute',
-        bottom: -12,
-        right: 8,
+        bottom: -20
     },
     reactionPill: {
         flexDirection: 'row',

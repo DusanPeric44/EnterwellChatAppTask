@@ -6,10 +6,7 @@
         "text": "Hej 👋",
         "url": null,
         "replyTo": null,
-        "reactions": {
-            "value": 0,
-            "count": 1
-        }
+        "reactions": null
     },
     {
         "id": 2,
@@ -18,10 +15,7 @@
         "text": "Ćao, šta ima?",
         "url": null,
         "replyTo": 1,
-        "reactions": {
-            "value": 1,
-            "count": 1
-        }
+        "reactions": null
     },
     {
         "id": 3,

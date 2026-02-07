@@ -7,7 +7,7 @@ export interface Message {
     text: string | null;
     url: string | null;
     replyTo: number | null;
-    reactions: Reaction;
+    reactions?: Reaction;
 }
 
 export interface Reaction {
