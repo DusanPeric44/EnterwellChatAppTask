@@ -1,12 +1,16 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     View,
     FlatList,
     StyleSheet,
     Image,
     KeyboardAvoidingView,
+    type TextInput as TextInputType,
+    NativeSyntheticEvent,
+    NativeScrollEvent,
+    TouchableOpacity
 } from 'react-native';
-import { TextInput, IconButton, Text, Surface, MD3Colors, Icon } from 'react-native-paper';
+import { TextInput, IconButton, Text, Surface, MD3Colors } from 'react-native-paper';
 import useChatViewModel from '../viewmodels/useChatViewModel';
 import { RootStackParamList } from '../../types';
 import MessageItem from '../components/MessageItem';
@@ -32,7 +36,27 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
     const [inputText, setInputText] = useState('');
     const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
     const [replyingTo, setReplyingTo] = useState<Message | null>(null);
-    const inputTextRef = useRef<any>(null);
+
+    const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+    const isNearBottomRef = useRef(true);
+    const inputTextRef = useRef<TextInputType>(null);
+    const flatListRef = useRef<FlatList>(null);
+    const previousMessageCountRef = useRef(0);
+
+    useEffect(() => {
+        const currentCount = messages.length;
+        const previousCount = previousMessageCountRef.current;
+
+        if (currentCount > previousCount) {
+            if (isNearBottomRef.current) {
+                scrollToBottom();
+            } else {
+                setShowScrollToBottom(true);
+            }
+        }
+
+        previousMessageCountRef.current = currentCount;
+    }, [messages]);
 
     const handleSend = () => {
         if (inputText.trim()) {
@@ -40,6 +64,9 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
             setInputText('');
             setReplyingTo(null);
         }
+
+        scrollToBottom();
+
     };
 
     const handleLongPress = (message: Message) => {
@@ -68,6 +95,39 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
         }
     };
 
+    const scrollToIndex = (item: Message) => {
+        if (!item.replyTo) {
+            return;
+        }
+        const index = messages.findIndex((m) => m.id === item.replyTo);
+        if (index === -1) {
+            return;
+        }
+        flatListRef.current?.scrollToIndex({
+            animated: true,
+            index,
+            viewPosition: 0.5
+        });
+    };
+
+    const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+        const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
+        const isNearBottom = distanceFromBottom < 100;
+
+        isNearBottomRef.current = isNearBottom;
+
+        if (isNearBottom) {
+            setShowScrollToBottom(false);
+        }
+    };
+
+    const scrollToBottom = () => {
+        setTimeout(() => {
+            flatListRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+    };
+
     return (
 
         <KeyboardAvoidingView
@@ -94,10 +154,12 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                     </Surface>
 
                     <FlatList
-                        data={messages.slice().reverse()}
+                        ref={flatListRef}
+                        data={messages.slice()}
                         renderItem={({ item }) => (
                             <MessageItem
                                 item={item}
+                                scrollToIndex={scrollToIndex}
                                 replyMessage={messages.find((m) => m.id === item.replyTo)}
                                 groupName={groupName}
                                 onLongPress={handleLongPress} />
@@ -105,7 +167,14 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                         keyExtractor={(item) => item.id.toString()}
                         style={styles.messagesList}
                         contentContainerStyle={styles.messagesContent}
-                        inverted={true}
+                        // getItemLayout={(_, index) => (
+                        //     { length: 100, offset: 100 * index, index }
+                        // )}
+                        onScroll={onScroll}
+                        scrollEventThrottle={16}
+                        maintainVisibleContentPosition={{
+                            minIndexForVisible: 0,
+                        }}
                     />
 
                     {/* Reaction Bar */}
@@ -119,6 +188,15 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                             onClose={() => setSelectedMessage(null)}
                             onCopy={handleCopy}
                         />
+                    )}
+
+                    {showScrollToBottom && (
+                        <TouchableOpacity
+                            style={styles.scrollToBottomButton}
+                            onPress={scrollToBottom}
+                        >
+                            <Text style={styles.buttonText}>↓</Text>
+                        </TouchableOpacity>
                     )}
 
                     {/* Reply Preview */}
@@ -219,6 +297,27 @@ const styles = StyleSheet.create({
     },
     inactiveSend: {
         opacity: 0.5,
+    },
+    scrollToBottomButton: {
+        position: 'absolute',
+        bottom: 80,
+        alignSelf: 'center',
+        backgroundColor: '#075E54',
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 24,
+        fontWeight: 'bold',
     },
 });
 

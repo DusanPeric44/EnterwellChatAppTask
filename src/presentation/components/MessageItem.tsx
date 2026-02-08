@@ -10,10 +10,11 @@ interface MessageItemProps {
     item: Message;
     replyMessage?: Message;
     groupName: string;
+    scrollToIndex: (item: Message) => void;
     onLongPress?: (message: Message) => void;
 }
 
-const MessageItem: React.FC<MessageItemProps> = ({ item, replyMessage, groupName, onLongPress }) => {
+const MessageItem: React.FC<MessageItemProps> = ({ item, replyMessage, groupName, scrollToIndex, onLongPress }) => {
     const isOwn = item.from === 0;
 
     return (
@@ -30,21 +31,28 @@ const MessageItem: React.FC<MessageItemProps> = ({ item, replyMessage, groupName
                     ]}
                     elevation={1}
                 >
-                    {replyMessage && (
-                        <View style={styles.replyContext}>
-                            <View style={styles.replyBar} />
-                            <View style={styles.replyContent}>
-                                <Text style={styles.replySender} numberOfLines={1}>
-                                    {replyMessage.from === 0 ? 'You' : groupName}
-                                </Text>
-                                <Text style={styles.replyText} numberOfLines={1}>
-                                    {replyMessage.type === 1
-                                        ? '[Photo]'
-                                        : replyMessage.text}
-                                </Text>
+                    <TouchableOpacity
+                        style={styles.replyButton}
+                        onPress={() => scrollToIndex(item)}
+                        activeOpacity={0.7}
+                    >
+                        {replyMessage && (
+                            <View style={styles.replyContext}>
+                                <View style={styles.replyBar} />
+                                <View style={styles.replyContent}>
+                                    <Text style={styles.replySender} numberOfLines={1}>
+                                        {replyMessage.from === 0 ? 'You' : groupName}
+                                    </Text>
+                                    <Text style={styles.replyText} numberOfLines={1}>
+                                        {replyMessage.type === 1
+                                            ? '[Photo]'
+                                            : replyMessage.text}
+                                    </Text>
+                                </View>
                             </View>
-                        </View>
-                    )}
+                        )}
+                    </TouchableOpacity>
+
 
                     {item.type === 0 && item.text && (
                         <Text style={styles.messageText}>{item.text}</Text>
@@ -101,6 +109,9 @@ const styles = StyleSheet.create({
     otherMessage: {
         backgroundColor: '#FFFFFF',
         alignSelf: 'flex-start',
+    },
+    replyButton: {
+        flex: 1,
     },
     replyContext: {
         flexDirection: 'row',
