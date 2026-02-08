@@ -11,6 +11,18 @@ export class LocalChatRepository implements ChatRepository {
         return this.messages;
     }
 
+    async getMessageById(id: number): Promise<Message | undefined> {
+        return this.messages.find((m) => m.id === id);
+    }
+
+    async updateMessage(message: Message): Promise<void> {
+        const index = this.messages.findIndex((m) => m.id === message.id);
+        if (index === -1) {
+            throw new Error("Message not found");
+        }
+        this.messages[index] = message;
+    }
+
     subscribeToMessages(onMessage: (msg: Message) => void): () => void {
         const scheduleNext = () => {
             const nextMessage = this.getNextMessage();

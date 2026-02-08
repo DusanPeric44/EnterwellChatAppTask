@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { Message } from "../../domain/models/Message";
 import { LocalChatRepository } from "../../data/repositories/LocalChatRepository";
+import { ChatRepository } from "../../data/repositories/ChatRepository";
+import { ReactionType } from "../../domain/enums/ReactionType";
+import { addReaction } from "../../domain/useCases/addReaction";
 
-// Ovjde zamijeniti LocalChatRepository sa RemoteChatRepository
-// za API funkcionalnost
-const repository = new LocalChatRepository();
 
-const useChatViewModel = () => {
+const useChatViewModel = (
+    // Ovjde zamijeniti LocalChatRepository sa RemoteChatRepository
+    // za API funkcionalnost
+    repository: ChatRepository = new LocalChatRepository()
+) => {
     const [messages, setMessages] = useState<Message[]>([]);
 
     useEffect(() => {
@@ -17,12 +21,20 @@ const useChatViewModel = () => {
         return unsubscribe;
     }, []);
 
-    const onReact = (messageId: number, reaction: number) => {
-        setMessages((prevMessages) =>
-            prevMessages.map((m) =>
-                m.id === messageId ? { ...m, reactions: { value: reaction, count: 1 } } : m
-            )
-        );
+    const onReact = async (messageId: number, reaction: ReactionType) => {
+        const message = messages.find((m) => m.id === messageId);
+        if (!message) {
+            return;
+        }
+
+        const updated = await addReaction(repository)(message, reaction);
+        if (updated) {
+            setMessages((prevMessages) =>
+                prevMessages.map((m) =>
+                    m.id === messageId ? updated : m
+                )
+            );
+        }
     };
     const onReplyPress = (message: Message) => {
         setMessages((prevMessages) =>
