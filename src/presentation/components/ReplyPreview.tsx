@@ -1,0 +1,77 @@
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Surface, IconButton, Text } from 'react-native-paper';
+import { Message } from '../../domain/models/Message';
+
+interface ReplyPreviewProps {
+    message: Message;
+    onCancel: () => void;
+}
+
+const ReplyPreview: React.FC<ReplyPreviewProps> = ({ message, onCancel }) => {
+    const isOwn = message.from === 0;
+
+    return (
+        <Surface style={styles.container} elevation={2}>
+            <View style={styles.content}>
+                <View style={styles.replyBar} />
+                <View style={styles.textContent}>
+                    <Text style={styles.senderName}>
+                        {isOwn ? 'You' : 'Contact'}
+                    </Text>
+                    <Text style={styles.messageText} numberOfLines={1}>
+                        {message.text}
+                    </Text>
+                </View>
+            </View>
+            <IconButton
+                icon="close"
+                size={20}
+                onPress={onCancel}
+                style={styles.closeButton}
+            />
+        </Surface>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#F5F5F5',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderTopWidth: 1,
+        borderTopColor: '#E0E0E0',
+    },
+    content: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    replyBar: {
+        width: 4,
+        height: 40,
+        backgroundColor: '#128C7E',
+        borderRadius: 2,
+        marginRight: 12,
+    },
+    textContent: {
+        flex: 1,
+    },
+    senderName: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#128C7E',
+        marginBottom: 2,
+    },
+    messageText: {
+        fontSize: 14,
+        color: '#666',
+    },
+    closeButton: {
+        margin: 0,
+    },
+});
+
+export default ReplyPreview;

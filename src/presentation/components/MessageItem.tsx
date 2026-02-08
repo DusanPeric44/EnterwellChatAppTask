@@ -19,7 +19,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ item, replyMessage, onLongPre
         <TouchableOpacity
             style={styles.messageContainer}
             onLongPress={() => onLongPress?.(item)}
-            activeOpacity={1}
+            activeOpacity={0.9}
         >
             <View style={styles.messageContainer}>
                 <Surface
@@ -33,7 +33,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ item, replyMessage, onLongPre
                         <View style={styles.replyContext}>
                             <View style={styles.replyBar} />
                             <View style={styles.replyContent}>
-                                <Text style={styles.replySender}>
+                                <Text style={styles.replySender} numberOfLines={1}>
                                     {replyMessage.from === 0 ? 'You' : 'Contact'}
                                 </Text>
                                 <Text style={styles.replyText} numberOfLines={1}>
@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         padding: 6,
         marginBottom: 6,
+        minWidth: '30%',
     },
     replyBar: {
         width: 3,

@@ -189,6 +189,8 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         marginBottom: 12,
         gap: 4,
+        width: '75%',
+        justifyContent: 'flex-end',
     },
     reactionButton: {
         width: 44,

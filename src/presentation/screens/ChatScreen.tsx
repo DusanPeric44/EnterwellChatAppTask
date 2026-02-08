@@ -5,7 +5,6 @@ import {
     StyleSheet,
     Image,
     KeyboardAvoidingView,
-    Platform,
 } from 'react-native';
 import { TextInput, IconButton, Text, Surface, MD3Colors } from 'react-native-paper';
 import useChatViewModel from '../viewmodels/useChatViewModel';
@@ -18,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useBehaviour } from '../hooks/useBehaviour';
+import ReplyPreview from '../components/ReplyPreview';
 
 type ChatScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Chat'>
 
@@ -28,11 +28,13 @@ const ChatScreen: React.FC<RootStackParamList['Chat']> = ({ groupName, groupAvat
     const { messages, sendMessage, onReact } = useChatViewModel();
     const [inputText, setInputText] = useState('');
     const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
+    const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
     const handleSend = () => {
         if (inputText.trim()) {
-            sendMessage(inputText.trim());
+            sendMessage(inputText.trim(), replyingTo?.id || undefined);
             setInputText('');
+            setReplyingTo(null);
         }
     };
 
@@ -48,8 +50,8 @@ const ChatScreen: React.FC<RootStackParamList['Chat']> = ({ groupName, groupAvat
     };
 
     const handleReply = (message: Message) => {
-        // setReplyingTo(message);
-        // setSelectedMessage(null);
+        setReplyingTo(message);
+        setSelectedMessage(null);
     };
 
     return (
@@ -100,6 +102,14 @@ const ChatScreen: React.FC<RootStackParamList['Chat']> = ({ groupName, groupAvat
                                 if (message) handleReply(message);
                             }}
                             onClose={() => setSelectedMessage(null)}
+                        />
+                    )}
+
+                    {/* Reply Preview */}
+                    {replyingTo && (
+                        <ReplyPreview
+                            message={replyingTo}
+                            onCancel={() => setReplyingTo(null)}
                         />
                     )}
 
