@@ -9,10 +9,11 @@ import { reactionIcons } from '../constants/reactionIcons';
 interface MessageItemProps {
     item: Message;
     replyMessage?: Message;
+    groupName: string;
     onLongPress?: (message: Message) => void;
 }
 
-const MessageItem: React.FC<MessageItemProps> = ({ item, replyMessage, onLongPress }) => {
+const MessageItem: React.FC<MessageItemProps> = ({ item, replyMessage, groupName, onLongPress }) => {
     const isOwn = item.from === 0;
 
     return (
@@ -34,7 +35,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ item, replyMessage, onLongPre
                             <View style={styles.replyBar} />
                             <View style={styles.replyContent}>
                                 <Text style={styles.replySender} numberOfLines={1}>
-                                    {replyMessage.from === 0 ? 'You' : 'Contact'}
+                                    {replyMessage.from === 0 ? 'You' : groupName}
                                 </Text>
                                 <Text style={styles.replyText} numberOfLines={1}>
                                     {replyMessage.type === 1

@@ -15,6 +15,7 @@ interface ReactionBarProps {
     onReact: (emoji: ReactionType) => void;
     onReply: () => void;
     onClose: () => void;
+    onCopy: () => void;
     visible?: boolean;
 }
 
@@ -22,6 +23,7 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
     onReact,
     onReply,
     onClose,
+    onCopy,
     visible = true,
 }) => {
     const [scaleAnim] = React.useState(new Animated.Value(0));
@@ -100,7 +102,7 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
 
                             <TouchableOpacity
                                 style={styles.actionButton}
-                                onPress={onClose}
+                                onPress={onCopy}
                                 activeOpacity={0.7}
                             >
                                 <IconButton
@@ -110,54 +112,6 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
                                     style={styles.actionIcon}
                                 />
                                 <Text style={styles.actionText}>Copy</Text>
-                            </TouchableOpacity>
-
-                            <View style={styles.actionDivider} />
-
-                            <TouchableOpacity
-                                style={styles.actionButton}
-                                onPress={onClose}
-                                activeOpacity={0.7}
-                            >
-                                <IconButton
-                                    icon="share-variant"
-                                    size={20}
-                                    iconColor="#666"
-                                    style={styles.actionIcon}
-                                />
-                                <Text style={styles.actionText}>Forward</Text>
-                            </TouchableOpacity>
-
-                            <View style={styles.actionDivider} />
-
-                            <TouchableOpacity
-                                style={styles.actionButton}
-                                onPress={onClose}
-                                activeOpacity={0.7}
-                            >
-                                <IconButton
-                                    icon="star-outline"
-                                    size={20}
-                                    iconColor="#666"
-                                    style={styles.actionIcon}
-                                />
-                                <Text style={styles.actionText}>Star</Text>
-                            </TouchableOpacity>
-
-                            <View style={styles.actionDivider} />
-
-                            <TouchableOpacity
-                                style={styles.actionButton}
-                                onPress={onClose}
-                                activeOpacity={0.7}
-                            >
-                                <IconButton
-                                    icon="delete-outline"
-                                    size={20}
-                                    iconColor="#666"
-                                    style={styles.actionIcon}
-                                />
-                                <Text style={styles.actionText}>Delete</Text>
                             </TouchableOpacity>
                         </Surface>
                     </Animated.View>

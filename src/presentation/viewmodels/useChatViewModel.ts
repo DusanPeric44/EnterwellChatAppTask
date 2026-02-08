@@ -1,25 +1,57 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Message } from "../../domain/models/Message";
 import { LocalChatRepository } from "../../data/repositories/LocalChatRepository";
 import { ChatRepository } from "../../data/repositories/ChatRepository";
 import { ReactionType } from "../../domain/enums/ReactionType";
 import { addReaction } from "../../domain/useCases/addReaction";
+import { getMessages } from "../../domain/useCases/getMessages";
 
 
 const useChatViewModel = (
     // Ovjde zamijeniti LocalChatRepository sa RemoteChatRepository
     // za API funkcionalnost
-    repository: ChatRepository = new LocalChatRepository()
+    repo?: ChatRepository
 ) => {
+    const repository = useMemo(() => repo ?? new LocalChatRepository(), [repo]);
     const [messages, setMessages] = useState<Message[]>([]);
 
     useEffect(() => {
-        repository.getInitialMessages().then(setMessages);
+        let isCancelled = false;
+        let unsubscribeFn: (() => void) | undefined;
 
-        const unsubscribe = repository.subscribeToMessages(msg => setMessages(prevMessages => [...prevMessages, msg]));
+        const bufferedMessages: Message[] = [];
+        let isReady = false;
 
-        return unsubscribe;
-    }, []);
+        const init = async () => {
+            const { initialMessages, unsubscribe } =
+                await getMessages(repository)(msg => {
+                    if (isCancelled) return;
+
+                    if (!isReady) {
+                        bufferedMessages.push(msg);
+                    } else {
+                        setMessages(prev => [...prev, msg]);
+                    }
+                });
+
+            if (isCancelled) {
+                unsubscribe();
+                return;
+            }
+
+            unsubscribeFn = unsubscribe;
+
+            setMessages([...initialMessages, ...bufferedMessages]);
+            isReady = true;
+        };
+
+        init();
+
+        return () => {
+            isCancelled = true;
+            unsubscribeFn?.();
+        };
+    }, [repository]);
 
     const onReact = async (messageId: number, reaction: ReactionType) => {
         const message = messages.find((m) => m.id === messageId);

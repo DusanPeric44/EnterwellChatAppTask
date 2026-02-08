@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
     View,
     FlatList,
@@ -14,14 +14,17 @@ import { Message } from '../../domain/models/Message';
 import { ReactionType } from '../../domain/enums/ReactionType';
 import ReactionBar from '../components/ReactionBar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useBehaviour } from '../hooks/useBehaviour';
 import ReplyPreview from '../components/ReplyPreview';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 type ChatScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Chat'>
+type Props = NativeStackScreenProps<RootStackParamList, 'Chat'>;
 
-const ChatScreen: React.FC<RootStackParamList['Chat']> = ({ groupName, groupAvatar }) => {
+const ChatScreen: React.FC<Props> = ({ route }) => {
+    const { groupName, groupAvatar } = route.params;
     const navigation = useNavigation<ChatScreenNavigationProp>();
     const insets = useSafeAreaInsets();
     const behaviour = useBehaviour();
@@ -29,6 +32,7 @@ const ChatScreen: React.FC<RootStackParamList['Chat']> = ({ groupName, groupAvat
     const [inputText, setInputText] = useState('');
     const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
     const [replyingTo, setReplyingTo] = useState<Message | null>(null);
+    const inputTextRef = useRef<any>(null);
 
     const handleSend = () => {
         if (inputText.trim()) {
@@ -51,7 +55,17 @@ const ChatScreen: React.FC<RootStackParamList['Chat']> = ({ groupName, groupAvat
 
     const handleReply = (message: Message) => {
         setReplyingTo(message);
+        inputTextRef?.current?.focus();
         setSelectedMessage(null);
+    };
+
+    const handleCopy = () => {
+        if (selectedMessage) {
+            const message = messages.find((m) => m.id === selectedMessage);
+            if (message) {
+                Clipboard.setString(message?.text || message?.url || '');
+            }
+        }
     };
 
     return (
@@ -85,6 +99,7 @@ const ChatScreen: React.FC<RootStackParamList['Chat']> = ({ groupName, groupAvat
                             <MessageItem
                                 item={item}
                                 replyMessage={messages.find((m) => m.id === item.replyTo)}
+                                groupName={groupName}
                                 onLongPress={handleLongPress} />
                         )}
                         keyExtractor={(item) => item.id.toString()}
@@ -102,6 +117,7 @@ const ChatScreen: React.FC<RootStackParamList['Chat']> = ({ groupName, groupAvat
                                 if (message) handleReply(message);
                             }}
                             onClose={() => setSelectedMessage(null)}
+                            onCopy={handleCopy}
                         />
                     )}
 
@@ -109,6 +125,7 @@ const ChatScreen: React.FC<RootStackParamList['Chat']> = ({ groupName, groupAvat
                     {replyingTo && (
                         <ReplyPreview
                             message={replyingTo}
+                            groupName={groupName}
                             onCancel={() => setReplyingTo(null)}
                         />
                     )}
@@ -116,6 +133,7 @@ const ChatScreen: React.FC<RootStackParamList['Chat']> = ({ groupName, groupAvat
                     <Surface style={styles.inputContainer} elevation={3}>
                         <IconButton icon="emoticon-happy-outline" size={24} />
                         <TextInput
+                            ref={inputTextRef}
                             style={styles.input}
                             value={inputText}
                             onChangeText={setInputText}

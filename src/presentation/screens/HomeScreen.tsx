@@ -11,7 +11,7 @@ const HomeScreen = () => {
     const navigation = useNavigation<HomeScreenNavigationProp>();
 
     const goToChat = () => {
-        navigation.navigate('Chat', { groupName: 'Enterwell Group', groupAvatar: 'https://picsum.photos/200' })
+        navigation.navigate('Chat', { groupName: 'Marko Marković', groupAvatar: 'https://picsum.photos/200' })
     }
 
     return (

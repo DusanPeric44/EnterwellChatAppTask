@@ -5,11 +5,13 @@ import { Message } from '../../domain/models/Message';
 
 interface ReplyPreviewProps {
     message: Message;
+    groupName: string;
     onCancel: () => void;
 }
 
-const ReplyPreview: React.FC<ReplyPreviewProps> = ({ message, onCancel }) => {
+const ReplyPreview: React.FC<ReplyPreviewProps> = ({ message, groupName, onCancel }) => {
     const isOwn = message.from === 0;
+    const isText = message.type === 0;
 
     return (
         <Surface style={styles.container} elevation={2}>
@@ -17,10 +19,10 @@ const ReplyPreview: React.FC<ReplyPreviewProps> = ({ message, onCancel }) => {
                 <View style={styles.replyBar} />
                 <View style={styles.textContent}>
                     <Text style={styles.senderName}>
-                        {isOwn ? 'You' : 'Contact'}
+                        {isOwn ? 'You' : groupName}
                     </Text>
                     <Text style={styles.messageText} numberOfLines={1}>
-                        {message.text}
+                        {isText ? message.text : '[Photo]'}
                     </Text>
                 </View>
             </View>
