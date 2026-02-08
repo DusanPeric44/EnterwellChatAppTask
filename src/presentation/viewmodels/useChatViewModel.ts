@@ -9,10 +9,9 @@ import { sendMessage } from "../../domain/useCases/sendMessage";
 
 
 const useChatViewModel = (
-    // Ovjde zamijeniti LocalChatRepository sa RemoteChatRepository
-    // za API funkcionalnost
     repo?: ChatRepository
 ) => {
+    // Ovjde zamijeniti LocalChatRepository sa RemoteChatRepository za API funkcionalnost
     const repository = useMemo(() => repo ?? new LocalChatRepository(), [repo]);
     const [messages, setMessages] = useState<Message[]>([]);
 

@@ -6,7 +6,7 @@ import {
     Image,
     KeyboardAvoidingView,
 } from 'react-native';
-import { TextInput, IconButton, Text, Surface, MD3Colors } from 'react-native-paper';
+import { TextInput, IconButton, Text, Surface, MD3Colors, Icon } from 'react-native-paper';
 import useChatViewModel from '../viewmodels/useChatViewModel';
 import { RootStackParamList } from '../../types';
 import MessageItem from '../components/MessageItem';
@@ -143,8 +143,6 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                             dense
                             outlineStyle={styles.inputOutline}
                         />
-                        <IconButton icon="attachment" size={24} />
-                        <IconButton icon="camera" size={24} />
                         {inputText.trim() ? (
                             <IconButton
                                 icon="send"
@@ -153,7 +151,11 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                                 onPress={handleSend}
                             />
                         ) : (
-                            <IconButton icon="microphone" size={24} iconColor="#25D366" />
+                            <IconButton
+                                icon="send"
+                                size={24}
+                                style={styles.inactiveSend}
+                            />
                         )}
                     </Surface>
                 </View>
@@ -214,6 +216,9 @@ const styles = StyleSheet.create({
     inputOutline: {
         borderRadius: 20,
         borderColor: '#E0E0E0',
+    },
+    inactiveSend: {
+        opacity: 0.5,
     },
 });
 
