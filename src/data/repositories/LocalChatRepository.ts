@@ -18,7 +18,7 @@ export class LocalChatRepository implements ChatRepository {
     async updateMessage(message: Message): Promise<void> {
         const index = this.messages.findIndex((m) => m.id === message.id);
         if (index === -1) {
-            throw new Error("Message not found");
+            return;
         }
         this.messages[index] = message;
     }

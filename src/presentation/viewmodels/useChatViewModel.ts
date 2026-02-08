@@ -59,7 +59,7 @@ const useChatViewModel = (
                 text: trimmed,
                 url: null,
                 replyTo: replyToId ?? null,
-                reactions: { value: 0, count: 0 },
+                reactions: undefined,
             };
 
             return [...prevMessages, newMessage];
