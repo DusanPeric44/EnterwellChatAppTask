@@ -5,6 +5,7 @@ import { ChatRepository } from "../../data/repositories/ChatRepository";
 import { ReactionType } from "../../domain/enums/ReactionType";
 import { addReaction } from "../../domain/useCases/addReaction";
 import { getMessages } from "../../domain/useCases/getMessages";
+import { sendMessage } from "../../domain/useCases/sendMessage";
 
 
 const useChatViewModel = (
@@ -68,35 +69,20 @@ const useChatViewModel = (
             );
         }
     };
-    const onReplyPress = (message: Message) => {
-        setMessages((prevMessages) =>
-            prevMessages.map((m) =>
-                m.id === message.id ? { ...m, replyTo: message.id } : m
-            )
-        );
-    };
-    const sendMessage = (text: string, replyToId?: number | null) => {
+
+    const onSendMessage = async (text: string, replyToId?: number | null) => {
         const trimmed = text.trim();
         if (!trimmed) {
             return;
         }
-
-        setMessages((prevMessages) => {
-            const nextId = Math.floor(Math.random() * 1000000) + 50;
-
-            const newMessage: Message = {
-                id: nextId,
-                type: 0,
-                from: 0,
-                text: trimmed,
-                url: null,
-                replyTo: replyToId ?? null,
-                reactions: undefined,
-            };
-
-            return [...prevMessages, newMessage];
+        const sent = await sendMessage(repository)({
+            text: trimmed,
+            replyTo: replyToId ?? null,
         });
+
+        setMessages((prevMessages) => [...prevMessages, sent]);
     };
+
     const scrollToMessage = (id: number) => {
         const message = messages.find((m) => m.id === id);
         if (message) {
@@ -107,9 +93,8 @@ const useChatViewModel = (
     return {
         messages,
         onReact,
-        onReplyPress,
         scrollToMessage,
-        sendMessage
+        sendMessage: onSendMessage
     }
 }
 
