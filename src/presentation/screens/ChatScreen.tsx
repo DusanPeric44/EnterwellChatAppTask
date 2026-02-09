@@ -92,6 +92,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
             if (message) {
                 Clipboard.setString(message?.text || message?.url || '');
             }
+            setSelectedMessage(null);
         }
     };
 
