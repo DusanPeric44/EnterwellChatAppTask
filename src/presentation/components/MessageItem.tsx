@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Surface } from 'react-native-paper';
 import { Message } from '../../domain/models/Message';
 import { ReactionType } from '../../domain/enums/ReactionType';
 import { reactionIcons } from '../constants/reactionIcons';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { Theme } from '../theme/colors';
 
 
 interface MessageItemProps {
@@ -17,6 +18,8 @@ interface MessageItemProps {
 
 const MessageItem: React.FC<MessageItemProps> = ({ item, replyMessage, groupName, scrollToIndex, onLongPress }) => {
     const isOwn = item.from === 0;
+    const { theme } = useTheme();
+    const styles = useMemo(() => createStyles(theme), [theme]);
 
     return (
         <TouchableOpacity
@@ -89,7 +92,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ item, replyMessage, groupName
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Theme) => StyleSheet.create({
     messageContainer: {
         flex: 1,
         width: '100%',
@@ -98,7 +101,7 @@ const styles = StyleSheet.create({
     },
     messageBubble: {
         maxWidth: '80%',
-        minWidth: '15%',
+        minWidth: 50,
         borderRadius: 8,
         padding: 8,
         position: 'relative',

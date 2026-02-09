@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
     View,
     StyleSheet,
@@ -10,7 +10,8 @@ import {
 import { Surface, IconButton, Text } from 'react-native-paper';
 import { ReactionType } from '../../domain/enums/ReactionType';
 import { reactionIcons } from '../constants/reactionIcons';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { Theme } from '../theme/colors';
 
 interface ReactionBarProps {
     onReact: (emoji: ReactionType) => void;
@@ -28,6 +29,8 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
     visible = true,
 }) => {
     const [scaleAnim] = React.useState(new Animated.Value(0));
+    const { theme } = useTheme();
+    const styles = useMemo(() => createStyles(theme), [theme]);
 
     useEffect(() => {
         if (visible) {
@@ -93,7 +96,6 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
                                 <IconButton
                                     icon="reply"
                                     size={20}
-                                    iconColor="#666"
                                     style={styles.actionIcon}
                                 />
                                 <Text style={styles.actionText}>Reply</Text>
@@ -109,7 +111,6 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
                                 <IconButton
                                     icon="content-copy"
                                     size={20}
-                                    iconColor="#666"
                                     style={styles.actionIcon}
                                 />
                                 <Text style={styles.actionText}>Copy</Text>
@@ -122,7 +123,7 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Theme) => StyleSheet.create({
     overlay: {
         flex: 1,
         backgroundColor: colors.chat.overlay,
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
     },
     actionText: {
         fontSize: 15,
-        color: colors.black,
+        color: colors.textPrimary,
         flex: 1,
     },
     actionDivider: {

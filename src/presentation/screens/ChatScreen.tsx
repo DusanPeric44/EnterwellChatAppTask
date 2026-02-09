@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import {
     View,
     FlatList,
@@ -9,7 +9,8 @@ import {
     NativeSyntheticEvent,
     NativeScrollEvent,
     TouchableOpacity,
-    Keyboard
+    Keyboard,
+    StatusBar,
 } from 'react-native';
 import { TextInput, IconButton, Text, Surface } from 'react-native-paper';
 import useChatViewModel from '../viewmodels/useChatViewModel';
@@ -18,14 +19,15 @@ import MessageItem from '../components/MessageItem';
 import { Message } from '../../domain/models/Message';
 import { ReactionType } from '../../domain/enums/ReactionType';
 import ReactionBar from '../components/ReactionBar';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useBehaviour } from '../hooks/useBehaviour';
 import ReplyPreview from '../components/ReplyPreview';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { emojiData, EmojiPicker } from '@hiraku-ai/react-native-emoji-picker';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { Theme } from '../theme/colors';
 
 type ChatScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Chat'>
 type Props = NativeStackScreenProps<RootStackParamList, 'Chat'>;
@@ -33,13 +35,14 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Chat'>;
 const ChatScreen: React.FC<Props> = ({ route }) => {
     const { groupName, groupAvatar } = route.params;
     const navigation = useNavigation<ChatScreenNavigationProp>();
-    const insets = useSafeAreaInsets();
     const behaviour = useBehaviour();
     const { messages, sendMessage, onReact } = useChatViewModel();
     const [inputText, setInputText] = useState('');
     const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
     const [replyingTo, setReplyingTo] = useState<Message | null>(null);
     const [emojiPickerVisible, setEmojiPickerVisible] = useState(false);
+    const { theme } = useTheme();
+    const styles = useMemo(() => createStyles(theme), [theme]);
 
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
     const isNearBottomRef = useRef(true);
@@ -87,6 +90,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
             sendMessage(inputText.trim(), replyingTo?.id || undefined);
             setTimeout(() => setInputText(''), 50);
             setReplyingTo(null);
+            setEmojiPickerVisible(false);
         }
 
         scrollToBottom();
@@ -153,132 +157,142 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
     };
 
     return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.statusBarBackground }}>
+            <StatusBar backgroundColor={theme.statusBarBackground} />
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={behaviour}
+            >
+                <View
+                    style={styles.container}>
+                    <View style={styles.inner}>
 
-        <KeyboardAvoidingView
-            style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}
-            behavior={behaviour}
-        >
-            <View
-                style={styles.container}>
-                <View style={styles.inner}>
+                        {/* Header */}
+                        <Surface style={styles.header} elevation={2}>
+                            <IconButton iconColor={theme.white} icon="arrow-left" size={24} onPress={() => {
+                                navigation.pop();
+                            }} />
+                            {groupAvatar && (
+                                <Image source={{ uri: groupAvatar }} style={styles.avatar} />
+                            )}
+                            <View style={styles.headerInfo}>
+                                <Text style={styles.groupName}>{groupName}</Text>
+                            </View>
+                            <IconButton iconColor={theme.white} icon="phone" size={24} onPress={() => { }} />
+                            <IconButton iconColor={theme.white} icon="dots-vertical" size={24} onPress={() => { }} />
+                        </Surface>
 
-                    {/* Header */}
-                    <Surface style={styles.header} elevation={2}>
-                        <IconButton iconColor={colors.white} icon="arrow-left" size={24} onPress={() => {
-                            navigation.pop();
-                        }} />
-                        {groupAvatar && (
-                            <Image source={{ uri: groupAvatar }} style={styles.avatar} />
+                        <FlatList
+                            ref={flatListRef}
+                            data={messages.slice()}
+                            renderItem={({ item }) => (
+                                <MessageItem
+                                    item={item}
+                                    scrollToIndex={scrollToIndex}
+                                    replyMessage={messages.find((m) => m.id === item.replyTo)}
+                                    groupName={groupName}
+                                    onLongPress={handleLongPress} />
+                            )}
+                            keyExtractor={(item) => item.id.toString()}
+                            style={styles.messagesList}
+                            contentContainerStyle={styles.messagesContent}
+                            onScroll={onScroll}
+                            scrollEventThrottle={16}
+                            maintainVisibleContentPosition={{
+                                minIndexForVisible: 0,
+                            }}
+                        />
+
+                        {/* Reaction Bar */}
+                        {selectedMessage && (
+                            <ReactionBar
+                                onReact={handleReaction}
+                                onReply={() => {
+                                    const message = messages.find((m) => m.id === selectedMessage);
+                                    if (message) handleReply(message);
+                                }}
+                                onClose={() => setSelectedMessage(null)}
+                                onCopy={handleCopy}
+                            />
                         )}
-                        <View style={styles.headerInfo}>
-                            <Text style={styles.groupName}>{groupName}</Text>
-                        </View>
-                        <IconButton iconColor={colors.white} icon="phone" size={24} onPress={() => { }} />
-                        <IconButton iconColor={colors.white} icon="dots-vertical" size={24} onPress={() => { }} />
-                    </Surface>
 
-                    <FlatList
-                        ref={flatListRef}
-                        data={messages.slice()}
-                        renderItem={({ item }) => (
-                            <MessageItem
-                                item={item}
-                                scrollToIndex={scrollToIndex}
-                                replyMessage={messages.find((m) => m.id === item.replyTo)}
+                        {showScrollToBottom && (
+                            <TouchableOpacity
+                                style={styles.scrollToBottomButton}
+                                onPress={scrollToBottom}
+                            >
+                                <Text style={styles.buttonText}>↓</Text>
+                            </TouchableOpacity>
+                        )}
+
+                        {/* Reply Preview */}
+                        {replyingTo && (
+                            <ReplyPreview
+                                message={replyingTo}
                                 groupName={groupName}
-                                onLongPress={handleLongPress} />
-                        )}
-                        keyExtractor={(item) => item.id.toString()}
-                        style={styles.messagesList}
-                        contentContainerStyle={styles.messagesContent}
-                        onScroll={onScroll}
-                        scrollEventThrottle={16}
-                        maintainVisibleContentPosition={{
-                            minIndexForVisible: 0,
-                        }}
-                    />
-
-                    {/* Reaction Bar */}
-                    {selectedMessage && (
-                        <ReactionBar
-                            onReact={handleReaction}
-                            onReply={() => {
-                                const message = messages.find((m) => m.id === selectedMessage);
-                                if (message) handleReply(message);
-                            }}
-                            onClose={() => setSelectedMessage(null)}
-                            onCopy={handleCopy}
-                        />
-                    )}
-
-                    {showScrollToBottom && (
-                        <TouchableOpacity
-                            style={styles.scrollToBottomButton}
-                            onPress={scrollToBottom}
-                        >
-                            <Text style={styles.buttonText}>↓</Text>
-                        </TouchableOpacity>
-                    )}
-
-                    {/* Reply Preview */}
-                    {replyingTo && (
-                        <ReplyPreview
-                            message={replyingTo}
-                            groupName={groupName}
-                            onCancel={() => setReplyingTo(null)}
-                        />
-                    )}
-
-                    <Surface style={styles.inputContainer} elevation={3}>
-                        <IconButton
-                            icon="emoticon-happy-outline"
-                            size={24}
-                            onPress={toggleEmojiPicker}
-                        />
-                        <TextInput
-                            ref={inputTextRef}
-                            style={styles.input}
-                            value={inputText}
-                            onChangeText={setInputText}
-                            placeholder="Message"
-                            mode="outlined"
-                            maxLength={1000}
-                            dense
-                            outlineStyle={styles.inputOutline}
-                        />
-                        {inputText.trim() ? (
-                            <IconButton
-                                icon="send"
-                                size={24}
-                                iconColor={colors.chat.sendBtn}
-                                onPress={handleSend}
-                            />
-                        ) : (
-                            <IconButton
-                                icon="send"
-                                size={24}
-                                style={styles.inactiveSend}
+                                onCancel={() => setReplyingTo(null)}
                             />
                         )}
-                    </Surface>
 
-                    {emojiPickerVisible && (
-                        <EmojiPicker
-                            onClose={() => setEmojiPickerVisible(false)}
-                            onEmojiSelect={(emoji) => {
-                                setInputText(inputText + emoji);
-                            }}
-                            emojis={emojiData}
-                        />
-                    )
-                    }
+                        <Surface style={styles.inputContainer} elevation={3}>
+                            <IconButton
+                                icon="emoticon-happy-outline"
+                                size={24}
+                                onPress={toggleEmojiPicker}
+                            />
+                            <TextInput
+                                ref={inputTextRef}
+                                style={styles.input}
+                                value={inputText}
+                                onChangeText={setInputText}
+                                placeholder="Message"
+                                mode="outlined"
+                                maxLength={1000}
+                                dense
+                                outlineStyle={styles.inputOutline}
+                                showSoftInputOnFocus={true}
+                            />
+                            {inputText.trim() ? (
+                                <IconButton
+                                    icon="send"
+                                    size={24}
+                                    iconColor={theme.chat.sendBtn}
+                                    onPress={handleSend}
+                                />
+                            ) : (
+                                <IconButton
+                                    icon="send"
+                                    size={24}
+                                    style={styles.inactiveSend}
+                                />
+                            )}
+                        </Surface>
+
+                        {emojiPickerVisible && (
+                            <EmojiPicker
+                                tabStyle={styles.emojiPickerBackground}
+                                activeTabStyle={styles.emojiPickerSelected}
+                                containerStyle={styles.emojiPickerBackground}
+                                searchBarStyle={styles.emojiPickerSelected}
+                                onClose={() => setEmojiPickerVisible(false)}
+                                onEmojiSelect={(emoji) => {
+                                    setInputText(inputText + emoji);
+                                }}
+                                emojis={emojiData}
+                                tabIconColors={{
+                                    background: theme.background
+                                }}
+                            />
+                        )
+                        }
+                    </View>
                 </View>
-            </View>
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Theme) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.chat.background,
@@ -344,7 +358,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: '#000',
+        shadowColor: colors.shadowColor,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
@@ -355,6 +369,12 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
     },
+    emojiPickerBackground: {
+        backgroundColor: colors.background
+    },
+    emojiPickerSelected: {
+        backgroundColor: colors.chat.inputContainer,
+    }
 });
 
 export default ChatScreen;

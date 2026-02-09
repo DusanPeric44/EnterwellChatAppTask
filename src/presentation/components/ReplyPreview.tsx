@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { IconButton, Text, Surface } from 'react-native-paper';
 import { Message } from '../../domain/models/Message';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { Theme } from '../theme/colors';
 
 interface ReplyPreviewProps {
     message: Message;
@@ -13,6 +14,8 @@ interface ReplyPreviewProps {
 const ReplyPreview: React.FC<ReplyPreviewProps> = ({ message, groupName, onCancel }) => {
     const isOwn = message.from === 0;
     const isText = message.type === 0;
+    const { theme } = useTheme();
+    const styles = useMemo(() => createStyles(theme), [theme]);
 
     return (
         <Surface style={styles.container} elevation={2}>
@@ -37,7 +40,7 @@ const ReplyPreview: React.FC<ReplyPreviewProps> = ({ message, groupName, onCance
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: Theme) => StyleSheet.create({
     container: {
         backgroundColor: colors.chat.replyPreview,
         paddingHorizontal: 12,
