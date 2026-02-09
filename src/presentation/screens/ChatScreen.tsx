@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     View,
     FlatList,
@@ -69,9 +69,9 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
 
     };
 
-    const handleLongPress = (message: Message) => {
+    const handleLongPress = useCallback((message: Message) => {
         setSelectedMessage(message.id);
-    };
+    }, []);
 
     const handleReaction = (emoji: ReactionType) => {
         if (selectedMessage) {
@@ -95,7 +95,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
         }
     };
 
-    const scrollToIndex = (item: Message) => {
+    const scrollToIndex = useCallback((item: Message) => {
         if (!item.replyTo) {
             return;
         }
@@ -108,7 +108,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
             index,
             viewPosition: 0.5
         });
-    };
+    }, [messages]);
 
     const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
@@ -167,9 +167,6 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                         keyExtractor={(item) => item.id.toString()}
                         style={styles.messagesList}
                         contentContainerStyle={styles.messagesContent}
-                        // getItemLayout={(_, index) => (
-                        //     { length: 100, offset: 100 * index, index }
-                        // )}
                         onScroll={onScroll}
                         scrollEventThrottle={16}
                         maintainVisibleContentPosition={{
