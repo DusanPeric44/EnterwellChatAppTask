@@ -8,7 +8,8 @@ import {
     type TextInput as TextInputType,
     NativeSyntheticEvent,
     NativeScrollEvent,
-    TouchableOpacity
+    TouchableOpacity,
+    Keyboard
 } from 'react-native';
 import { TextInput, IconButton, Text, Surface, MD3Colors } from 'react-native-paper';
 import useChatViewModel from '../viewmodels/useChatViewModel';
@@ -23,6 +24,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useBehaviour } from '../hooks/useBehaviour';
 import ReplyPreview from '../components/ReplyPreview';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { emojiData, EmojiPicker, EmojiPickerModal } from '@hiraku-ai/react-native-emoji-picker';
 
 type ChatScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Chat'>
 type Props = NativeStackScreenProps<RootStackParamList, 'Chat'>;
@@ -36,6 +38,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
     const [inputText, setInputText] = useState('');
     const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
     const [replyingTo, setReplyingTo] = useState<Message | null>(null);
+    const [emojiPickerVisible, setEmojiPickerVisible] = useState(false);
 
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
     const isNearBottomRef = useRef(true);
@@ -57,6 +60,26 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
 
         previousMessageCountRef.current = currentCount;
     }, [messages]);
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setEmojiPickerVisible(false);
+            }
+        );
+
+        return () => {
+            keyboardDidShowListener.remove();
+        };
+    }, []);
+
+    const toggleEmojiPicker = () => {
+        if (!emojiPickerVisible) {
+            Keyboard.dismiss();
+        }
+        setEmojiPickerVisible(!emojiPickerVisible);
+    };
 
     const handleSend = () => {
         if (inputText.trim()) {
@@ -207,7 +230,11 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                     )}
 
                     <Surface style={styles.inputContainer} elevation={3}>
-                        <IconButton icon="emoticon-happy-outline" size={24} />
+                        <IconButton
+                            icon="emoticon-happy-outline"
+                            size={24}
+                            onPress={toggleEmojiPicker}
+                        />
                         <TextInput
                             ref={inputTextRef}
                             style={styles.input}
@@ -234,6 +261,17 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                             />
                         )}
                     </Surface>
+
+                    {emojiPickerVisible && (
+                        <EmojiPicker
+                            onClose={() => setEmojiPickerVisible(false)}
+                            onEmojiSelect={(emoji) => {
+                                setInputText(inputText + emoji);
+                            }}
+                            emojis={emojiData}
+                        />
+                    )
+                    }
                 </View>
             </View>
         </KeyboardAvoidingView>
