@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Surface, IconButton, Text } from 'react-native-paper';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { IconButton, Text, Surface } from 'react-native-paper';
 import { Message } from '../../domain/models/Message';
+import { colors } from '../theme/colors';
 
 interface ReplyPreviewProps {
     message: Message;
@@ -38,13 +39,13 @@ const ReplyPreview: React.FC<ReplyPreviewProps> = ({ message, groupName, onCance
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#F5F5F5',
+        backgroundColor: colors.chat.replyPreview,
         paddingHorizontal: 12,
         paddingVertical: 8,
         flexDirection: 'row',
         alignItems: 'center',
         borderTopWidth: 1,
-        borderTopColor: '#E0E0E0',
+        borderTopColor: colors.border,
     },
     content: {
         flex: 1,
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     replyBar: {
         width: 4,
         height: 40,
-        backgroundColor: '#128C7E',
+        backgroundColor: colors.chat.replyBar,
         borderRadius: 2,
         marginRight: 12,
     },
@@ -64,12 +65,12 @@ const styles = StyleSheet.create({
     senderName: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#128C7E',
+        color: colors.chat.replyBar,
         marginBottom: 2,
     },
     messageText: {
         fontSize: 14,
-        color: '#666',
+        color: colors.message.meta,
     },
     closeButton: {
         margin: 0,

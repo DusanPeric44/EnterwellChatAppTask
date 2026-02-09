@@ -4,6 +4,7 @@ import { Surface } from 'react-native-paper';
 import { Message } from '../../domain/models/Message';
 import { ReactionType } from '../../domain/enums/ReactionType';
 import { reactionIcons } from '../constants/reactionIcons';
+import { colors } from '../theme/colors';
 
 
 interface MessageItemProps {
@@ -103,12 +104,12 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     ownMessage: {
-        backgroundColor: '#DCF8C6',
+        backgroundColor: colors.message.outgoing,
         alignSelf: 'flex-end',
         marginLeft: 'auto',
     },
     otherMessage: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.message.incoming,
         alignSelf: 'flex-start',
     },
     replyButton: {
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     },
     replyContext: {
         flexDirection: 'row',
-        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        backgroundColor: colors.chat.replyContext,
         borderRadius: 4,
         padding: 6,
         marginBottom: 6,
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
     },
     replyBar: {
         width: 3,
-        backgroundColor: '#128C7E',
+        backgroundColor: colors.chat.replyBar,
         borderRadius: 2,
         marginRight: 6,
     },
@@ -134,16 +135,16 @@ const styles = StyleSheet.create({
     replySender: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#128C7E',
+        color: colors.chat.replyBar,
         marginBottom: 2,
     },
     replyText: {
         fontSize: 12,
-        color: '#666',
+        color: colors.message.meta,
     },
     messageText: {
         fontSize: 15,
-        color: '#000',
+        color: colors.message.text,
         lineHeight: 20,
     },
     messageImage: {
@@ -163,12 +164,12 @@ const styles = StyleSheet.create({
     reactionPill: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.background,
         borderRadius: 12,
         paddingHorizontal: 6,
         paddingVertical: 2,
         borderWidth: 1,
-        borderColor: '#E0E0E0',
+        borderColor: colors.chat.inputBorder,
         gap: 2,
     },
     reactionEmoji: {
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
     },
     reactionCount: {
         fontSize: 11,
-        color: '#666',
+        color: colors.message.meta,
     },
 });
 

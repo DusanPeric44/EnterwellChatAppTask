@@ -11,7 +11,7 @@ import {
     TouchableOpacity,
     Keyboard
 } from 'react-native';
-import { TextInput, IconButton, Text, Surface, MD3Colors } from 'react-native-paper';
+import { TextInput, IconButton, Text, Surface } from 'react-native-paper';
 import useChatViewModel from '../viewmodels/useChatViewModel';
 import { RootStackParamList } from '../../types';
 import MessageItem from '../components/MessageItem';
@@ -24,7 +24,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useBehaviour } from '../hooks/useBehaviour';
 import ReplyPreview from '../components/ReplyPreview';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { emojiData, EmojiPicker, EmojiPickerModal } from '@hiraku-ai/react-native-emoji-picker';
+import { emojiData, EmojiPicker } from '@hiraku-ai/react-native-emoji-picker';
+import { colors } from '../theme/colors';
 
 type ChatScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Chat'>
 type Props = NativeStackScreenProps<RootStackParamList, 'Chat'>;
@@ -84,12 +85,11 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
     const handleSend = () => {
         if (inputText.trim()) {
             sendMessage(inputText.trim(), replyingTo?.id || undefined);
-            setInputText('');
+            setTimeout(() => setInputText(''), 50);
             setReplyingTo(null);
         }
 
         scrollToBottom();
-
     };
 
     const handleLongPress = useCallback((message: Message) => {
@@ -164,7 +164,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
 
                     {/* Header */}
                     <Surface style={styles.header} elevation={2}>
-                        <IconButton iconColor={MD3Colors.primary100} icon="arrow-left" size={24} onPress={() => {
+                        <IconButton iconColor={colors.white} icon="arrow-left" size={24} onPress={() => {
                             navigation.pop();
                         }} />
                         {groupAvatar && (
@@ -173,8 +173,8 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                         <View style={styles.headerInfo}>
                             <Text style={styles.groupName}>{groupName}</Text>
                         </View>
-                        <IconButton iconColor={MD3Colors.primary100} icon="phone" size={24} onPress={() => { }} />
-                        <IconButton iconColor={MD3Colors.primary100} icon="dots-vertical" size={24} onPress={() => { }} />
+                        <IconButton iconColor={colors.white} icon="phone" size={24} onPress={() => { }} />
+                        <IconButton iconColor={colors.white} icon="dots-vertical" size={24} onPress={() => { }} />
                     </Surface>
 
                     <FlatList
@@ -250,7 +250,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                             <IconButton
                                 icon="send"
                                 size={24}
-                                iconColor="#25D366"
+                                iconColor={colors.chat.sendBtn}
                                 onPress={handleSend}
                             />
                         ) : (
@@ -281,7 +281,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#ECE5DD',
+        backgroundColor: colors.chat.background,
     },
     inner: {
         flex: 1,
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 4,
         paddingVertical: 8,
-        backgroundColor: '#075E54',
+        backgroundColor: colors.chat.header,
     },
     avatar: {
         width: 40,
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     groupName: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#FFFFFF',
+        color: colors.white,
     },
     messagesList: {
         flex: 1,
@@ -320,16 +320,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 8,
         paddingVertical: 4,
-        backgroundColor: '#F0F0F0',
+        backgroundColor: colors.chat.inputContainer,
     },
     input: {
         flex: 1,
         maxHeight: 100,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.background,
     },
     inputOutline: {
         borderRadius: 20,
-        borderColor: '#E0E0E0',
+        borderColor: colors.chat.inputBorder,
     },
     inactiveSend: {
         opacity: 0.5,
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 80,
         alignSelf: 'center',
-        backgroundColor: '#075E54',
+        backgroundColor: colors.chat.header,
         width: 50,
         height: 50,
         borderRadius: 25,
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     buttonText: {
-        color: 'white',
+        color: colors.white,
         fontSize: 24,
         fontWeight: 'bold',
     },

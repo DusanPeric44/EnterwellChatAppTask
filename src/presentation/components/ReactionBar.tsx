@@ -10,6 +10,7 @@ import {
 import { Surface, IconButton, Text } from 'react-native-paper';
 import { ReactionType } from '../../domain/enums/ReactionType';
 import { reactionIcons } from '../constants/reactionIcons';
+import { colors } from '../theme/colors';
 
 interface ReactionBarProps {
     onReact: (emoji: ReactionType) => void;
@@ -124,7 +125,7 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        backgroundColor: colors.chat.overlay,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
     },
     reactionsBar: {
         flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.background,
         borderRadius: 30,
         paddingHorizontal: 8,
         paddingVertical: 8,
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
         fontSize: 28,
     },
     actionsBar: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.background,
         borderRadius: 12,
         paddingVertical: 8,
         paddingHorizontal: 4,
@@ -175,12 +176,12 @@ const styles = StyleSheet.create({
     },
     actionText: {
         fontSize: 15,
-        color: '#000',
+        color: colors.black,
         flex: 1,
     },
     actionDivider: {
         height: 1,
-        backgroundColor: '#E0E0E0',
+        backgroundColor: colors.border,
         marginHorizontal: 12,
     },
 });
