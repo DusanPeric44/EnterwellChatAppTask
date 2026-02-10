@@ -23,6 +23,12 @@ export class LocalChatRepository implements ChatRepository {
         this.messages[index] = message;
     }
 
+    async sendMessage(message: Message): Promise<void> {
+        // Ne emitujemo promjenu nazad, zato sto je local repo
+        // viewmodel će optimisticki dodati poruku
+        this.messages.push(message);
+    }
+
     subscribeToMessages(onMessage: (msg: Message) => void): () => void {
         const scheduleNext = () => {
             const nextMessage = this.getNextMessage();

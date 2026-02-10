@@ -20,7 +20,7 @@ export function sendMessage(repository: ChatRepository) {
         };
 
         // Postaviti ovo nakon implementacije API
-        // await repository.sendMessage(message);
+        await repository.sendMessage(message);
 
         return message;
     };

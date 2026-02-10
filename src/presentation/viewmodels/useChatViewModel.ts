@@ -33,7 +33,10 @@ const useChatViewModel = (
                     if (!isReady) {
                         bufferedMessages.push(msg);
                     } else {
-                        setMessages(prev => [...prev, msg]);
+                        setMessages(prev => {
+                            if (prev.some(m => m.id === msg.id)) return prev;
+                            return [...prev, msg];
+                        });
                     }
                 });
 
@@ -84,7 +87,10 @@ const useChatViewModel = (
             replyTo: replyToId ?? null,
         });
 
-        setMessages((prevMessages) => [...prevMessages, sent]);
+        setMessages((prevMessages) => {
+            if (prevMessages.some(m => m.id === sent.id)) return prevMessages;
+            return [...prevMessages, sent];
+        });
     };
 
     return {

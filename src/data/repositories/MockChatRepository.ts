@@ -38,8 +38,6 @@ export class MockChatRepository implements ChatRepository {
     }
 
     async sendMessage(message: Message): Promise<void> {
-        this.messages.push(message);
-
         // Simulacija realtime emit-a
         this.emitMessage(message);
     }
