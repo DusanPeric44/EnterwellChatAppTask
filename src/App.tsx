@@ -1,5 +1,4 @@
 import { createStaticNavigation } from "@react-navigation/native";
-import { StatusBar, useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import RootStack from "./navigation/RootStack";
 import { ThemeProvider } from "./presentation/theme/ThemeContext";

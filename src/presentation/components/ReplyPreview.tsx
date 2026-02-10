@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { IconButton, Text, Surface } from 'react-native-paper';
 import { Message } from '../../domain/models/Message';
 import { useTheme } from '../theme/ThemeContext';
