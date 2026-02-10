@@ -71,7 +71,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ item, replyMessage, groupName
 
                     {item.reactions && (
                         <View style={[styles.reactionsContainer,
-                        isOwn ? { right: 5 } : { left: 5 },
+                        isOwn ? styles.reactionRight : styles.reactionLeft,
                         ]}>
                             <View key={item.reactions.value} style={styles.reactionPill}>
                                 <Text style={styles.reactionEmoji}>
@@ -98,6 +98,12 @@ const createStyles = (colors: Theme) => StyleSheet.create({
         width: '100%',
         marginVertical: 8,
         alignItems: 'flex-start',
+    },
+    reactionLeft: {
+        left: 5,
+    },
+    reactionRight: {
+        right: 5,
     },
     messageBubble: {
         maxWidth: '80%',

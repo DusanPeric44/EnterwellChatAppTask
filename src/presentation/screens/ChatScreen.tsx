@@ -158,10 +158,10 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: theme.statusBarBackground }}>
+        <SafeAreaView style={styles.safeArea}>
             <StatusBar backgroundColor={theme.statusBarBackground} />
             <KeyboardAvoidingView
-                style={{ flex: 1 }}
+                style={styles.keyboardAvoiding}
                 behavior={behaviour}
             >
                 <View
@@ -309,6 +309,13 @@ const createStyles = (colors: Theme) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.chat.background,
+    },
+    safeArea: {
+        flex: 1,
+        backgroundColor: colors.statusBarBackground,
+    },
+    keyboardAvoiding: {
+        flex: 1,
     },
     inner: {
         flex: 1,
