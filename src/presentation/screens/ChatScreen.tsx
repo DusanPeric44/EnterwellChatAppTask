@@ -11,6 +11,7 @@ import {
     TouchableOpacity,
     Keyboard,
     StatusBar,
+    ActivityIndicator,
 } from 'react-native';
 import { TextInput, IconButton, Text, Surface } from 'react-native-paper';
 import useChatViewModel from '../viewmodels/useChatViewModel';
@@ -36,7 +37,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
     const { groupName, groupAvatar } = route.params;
     const navigation = useNavigation<ChatScreenNavigationProp>();
     const behaviour = useBehaviour();
-    const { messages, sendMessage, onReact } = useChatViewModel();
+    const { messages, sendMessage, onReact, loading, error } = useChatViewModel();
     const [inputText, setInputText] = useState('');
     const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
     const [replyingTo, setReplyingTo] = useState<Message | null>(null);
@@ -182,26 +183,38 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                             <IconButton iconColor={theme.white} icon="dots-vertical" size={24} onPress={() => { }} />
                         </Surface>
 
-                        <FlatList
-                            ref={flatListRef}
-                            data={messages.slice()}
-                            renderItem={({ item }) => (
-                                <MessageItem
-                                    item={item}
-                                    scrollToIndex={scrollToIndex}
-                                    replyMessage={messages.find((m) => m.id === item.replyTo)}
-                                    groupName={groupName}
-                                    onLongPress={handleLongPress} />
+                        <View style={styles.contentContainer}>
+                            {loading ? (
+                                <ActivityIndicator size="large" color={theme.primary} />
+                            ) : (
+                                <>
+                                    {error ? (
+                                        <Text style={styles.errorText}>Error: {error}</Text>
+                                    ) : (
+                                        <FlatList
+                                            ref={flatListRef}
+                                            data={messages.slice()}
+                                            renderItem={({ item }) => (
+                                                <MessageItem
+                                                    item={item}
+                                                    scrollToIndex={scrollToIndex}
+                                                    replyMessage={messages.find((m) => m.id === item.replyTo)}
+                                                    groupName={groupName}
+                                                    onLongPress={handleLongPress} />
+                                            )}
+                                            keyExtractor={(item) => item.id.toString()}
+                                            style={styles.messagesList}
+                                            contentContainerStyle={styles.messagesContent}
+                                            onScroll={onScroll}
+                                            scrollEventThrottle={16}
+                                            maintainVisibleContentPosition={{
+                                                minIndexForVisible: 0,
+                                            }}
+                                        />
+                                    )}
+                                </>
                             )}
-                            keyExtractor={(item) => item.id.toString()}
-                            style={styles.messagesList}
-                            contentContainerStyle={styles.messagesContent}
-                            onScroll={onScroll}
-                            scrollEventThrottle={16}
-                            maintainVisibleContentPosition={{
-                                minIndexForVisible: 0,
-                            }}
-                        />
+                        </View>
 
                         {/* Reaction Bar */}
                         {selectedMessage && (
@@ -374,6 +387,16 @@ const createStyles = (colors: Theme) => StyleSheet.create({
     },
     emojiPickerSelected: {
         backgroundColor: colors.chat.inputContainer,
+    },
+    errorText: {
+        color: colors.error,
+        fontSize: 14,
+        fontWeight: '400',
+        marginBottom: 8,
+    },
+    contentContainer: {
+        flex: 1,
+        justifyContent: 'center',
     }
 });
 

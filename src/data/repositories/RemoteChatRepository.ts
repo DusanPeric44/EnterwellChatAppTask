@@ -1,3 +1,5 @@
+import { ApiError } from "../../domain/errors/ApiError";
+import { ChatError } from "../../domain/errors/ChatError";
 import { Message } from "../../domain/models/Message";
 import { apiClient } from "../api/apiClient";
 import { ENDPOINTS } from "../api/endpoints";
@@ -5,26 +7,54 @@ import { ChatRepository } from "./ChatRepository";
 
 
 export class RemoteChatRepository implements ChatRepository {
-    getInitialMessages(): Promise<Message[]> {
-        return apiClient.get(ENDPOINTS.MESSAGES);
+    async getInitialMessages(): Promise<Message[]> {
+        try {
+            const response = await apiClient.get<Message[]>(ENDPOINTS.MESSAGES);
+            return response || [];
+        } catch (error) {
+            throw this.mapError(error);
+        }
     }
 
     subscribeToMessages(
         onMessage: (message: Message) => void
     ): () => void {
-        apiClient.connect(raw => {
-            // Ovdje ide kastovanje po potrebi u poruku sa domain layera
-            const message = raw as Message;
-            return onMessage(message)
+        try {
+            apiClient.connect(raw => {
+                // Ovdje ide kastovanje po potrebi u poruku sa domain layera
+                const message = raw as Message;
+                return onMessage(message)
+            }
+            );
+            return () => apiClient.disconnect();
+        } catch (error) {
+            throw this.mapError(error);
         }
-        );
-        return () => apiClient.disconnect();
     }
 
     async getMessageById(id: number): Promise<Message | undefined> {
-        return apiClient.get(`${ENDPOINTS.MESSAGES}/${id}`);
+        try {
+            const response = await apiClient.get<Message>(`${ENDPOINTS.MESSAGES}/${id}`);
+            return response;
+        } catch (error) {
+            throw this.mapError(error);
+        }
     }
     async updateMessage(message: Message): Promise<void> {
-        return apiClient.put(`${ENDPOINTS.MESSAGES}/${message.id}`, message);
+        try {
+            await apiClient.put<void>(`${ENDPOINTS.MESSAGES}/${message.id}`, message);
+        } catch (error) {
+            throw this.mapError(error);
+        }
+    }
+
+    private mapError(error: unknown): ChatError {
+        if (error instanceof ApiError) {
+            if (!error.status) return { type: 'network' };
+            if (error.status === 401) return { type: 'unauthorized' };
+            if (error.status === 404) return { type: 'not_found' };
+        }
+
+        return { type: 'unknown' };
     }
 }

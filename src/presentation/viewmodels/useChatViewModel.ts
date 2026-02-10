@@ -14,6 +14,8 @@ const useChatViewModel = (
     // Ovjde zamijeniti LocalChatRepository sa RemoteChatRepository za API funkcionalnost
     const repository = useMemo(() => repo ?? new LocalChatRepository(), [repo]);
     const [messages, setMessages] = useState<Message[]>([]);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         let isCancelled = false;
@@ -23,6 +25,7 @@ const useChatViewModel = (
         let isReady = false;
 
         const init = async () => {
+            setLoading(true);
             const { initialMessages, unsubscribe } =
                 await getMessages(repository)(msg => {
                     if (isCancelled) return;
@@ -43,6 +46,7 @@ const useChatViewModel = (
 
             setMessages([...initialMessages, ...bufferedMessages]);
             isReady = true;
+            setLoading(false);
         };
 
         init();
@@ -50,6 +54,7 @@ const useChatViewModel = (
         return () => {
             isCancelled = true;
             unsubscribeFn?.();
+            setError(null);
         };
     }, [repository]);
 
@@ -82,18 +87,12 @@ const useChatViewModel = (
         setMessages((prevMessages) => [...prevMessages, sent]);
     };
 
-    const scrollToMessage = (id: number) => {
-        const message = messages.find((m) => m.id === id);
-        if (message) {
-            //scroll to message
-        }
-    };
-
     return {
         messages,
         onReact,
-        scrollToMessage,
-        sendMessage: onSendMessage
+        sendMessage: onSendMessage,
+        error,
+        loading,
     }
 }
 
