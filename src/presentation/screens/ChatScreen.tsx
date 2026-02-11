@@ -41,6 +41,8 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
     const navigation = useNavigation<ChatScreenNavigationProp>();
     const behaviour = useBehaviour();
     const insets = useSafeAreaInsets();
+    // Ovjde se treba promijeniti na RemoteChatRepository za produkciju
+    // u nekim stvarnim, vecim projektima, koristio bi se dependency injection
     const repository = useMemo(() => new LocalChatRepository(), []);
     const { messages, sendMessage, onReact, loading, error } = useChatViewModel(repository);
     const [inputText, setInputText] = useState('');
