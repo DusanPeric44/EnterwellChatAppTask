@@ -53,6 +53,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
     const flatListRef = useRef<FlatList>(null);
     const previousMessageCountRef = useRef(0);
     const [keyboardVisible, setKeyboardVisible] = useState(false);
+    const messageById = useMemo(() => new Map(messages.map(m => [m.id, m])), [messages]);
 
     useEffect(() => {
         const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
@@ -126,13 +127,12 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
 
     const handleReply = (message: Message) => {
         setReplyingTo(message);
-        inputTextRef?.current?.focus();
         setSelectedMessage(null);
     };
 
     const handleCopy = () => {
         if (selectedMessage) {
-            const message = messages.find((m) => m.id === selectedMessage);
+            const message = messageById.get(selectedMessage);
             if (message) {
                 Clipboard.setString(message?.text || message?.url || '');
             }
@@ -144,7 +144,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
         if (!item.replyTo) {
             return;
         }
-        const index = messages.findIndex((m) => m.id === item.replyTo);
+        const index = messages.indexOf(messageById.get(item.replyTo!)!);
         if (index === -1) {
             return;
         }
@@ -208,12 +208,12 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                                     ) : (
                                         <FlatList
                                             ref={flatListRef}
-                                            data={messages.slice()}
+                                            data={messages}
                                             renderItem={({ item }) => (
                                                 <MessageItem
                                                     item={item}
                                                     scrollToIndex={scrollToIndex}
-                                                    replyMessage={messages.find((m) => m.id === item.replyTo)}
+                                                    replyMessage={messageById.get(item.replyTo!)}
                                                     groupName={groupName}
                                                     onLongPress={handleLongPress} />
                                             )}
@@ -236,7 +236,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                             <ReactionBar
                                 onReact={handleReaction}
                                 onReply={() => {
-                                    const message = messages.find((m) => m.id === selectedMessage);
+                                    const message = messageById.get(selectedMessage);
                                     if (message) handleReply(message);
                                 }}
                                 onClose={() => setSelectedMessage(null)}
@@ -387,7 +387,7 @@ const createStyles = (colors: Theme) => StyleSheet.create({
     },
     scrollToBottomButton: {
         position: 'absolute',
-        bottom: 80,
+        bottom: 100,
         alignSelf: 'center',
         backgroundColor: colors.chat.header,
         width: 50,

@@ -1,4 +1,4 @@
-import { ApiError } from "../../domain/errors/ApiError";
+import { ApiError } from "../errors/ApiError";
 import { ChatError } from "../../domain/errors/ChatError";
 import { Message } from "../../domain/models/Message";
 import { apiClient } from "../api/apiClient";
@@ -7,6 +7,13 @@ import { ChatRepository } from "./ChatRepository";
 
 
 export class RemoteChatRepository implements ChatRepository {
+    async sendMessage(message: Message): Promise<void> {
+        try {
+            await apiClient.post<void>(ENDPOINTS.MESSAGES, message);
+        } catch (error) {
+            throw this.mapError(error);
+        }
+    }
     async getInitialMessages(): Promise<Message[]> {
         try {
             const response = await apiClient.get<Message[]>(ENDPOINTS.MESSAGES);
