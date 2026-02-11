@@ -31,6 +31,10 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
     const [scaleAnim] = React.useState(new Animated.Value(0));
     const { theme } = useTheme();
     const styles = useMemo(() => createStyles(theme), [theme]);
+    const reactions = Object.keys(ReactionType).map(label => ({
+        label,
+        value: ReactionType[label as keyof typeof ReactionType],
+    }));
 
     useEffect(() => {
         if (visible) {
@@ -71,16 +75,20 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
                     >
                         {/* Reactions Bar */}
                         <Surface style={styles.reactionsBar} elevation={4}>
-                            {Object.values(ReactionType).map((emoji) => (
-                                <TouchableOpacity
-                                    key={emoji}
-                                    style={styles.reactionButton}
-                                    onPress={() => handleReaction(emoji as ReactionType)}
-                                    activeOpacity={0.7}
-                                >
-                                    <Text style={styles.reactionEmoji}>{reactionIcons[emoji as ReactionType]}</Text>
-                                </TouchableOpacity>
-                            ))}
+                            {reactions.map(({ value: emoji }) => {
+                                const emojiStr = (reactionIcons[emoji])?.trim();
+                                if (!emojiStr) return null;
+                                return (
+                                    <TouchableOpacity
+                                        key={emoji}
+                                        style={styles.reactionButton}
+                                        onPress={() => handleReaction(emoji)}
+                                        activeOpacity={0.7}
+                                    >
+                                        <Text style={styles.reactionEmoji}>{emojiStr}</Text>
+                                    </TouchableOpacity>
+                                );
+                            })}
                         </Surface>
 
                         {/* Action Buttons */}
@@ -141,16 +149,14 @@ const createStyles = (colors: Theme) => StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: colors.background,
         borderRadius: 30,
-        paddingHorizontal: 8,
+        paddingHorizontal: 12,
         paddingVertical: 8,
         marginBottom: 12,
-        gap: 4,
+        gap: 12,
         width: '75%',
-        justifyContent: 'flex-end',
+        justifyContent: 'space-between',
     },
     reactionButton: {
-        width: 44,
-        height: 44,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 22,

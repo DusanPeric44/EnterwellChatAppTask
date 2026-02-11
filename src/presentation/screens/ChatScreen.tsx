@@ -12,6 +12,7 @@ import {
     Keyboard,
     StatusBar,
     ActivityIndicator,
+    Platform,
 } from 'react-native';
 import { TextInput, IconButton, Text, Surface } from 'react-native-paper';
 import useChatViewModel from '../viewmodels/useChatViewModel';
@@ -20,7 +21,7 @@ import MessageItem from '../components/MessageItem';
 import { Message } from '../../domain/models/Message';
 import { ReactionType } from '../../domain/enums/ReactionType';
 import ReactionBar from '../components/ReactionBar';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useBehaviour } from '../hooks/useBehaviour';
@@ -37,6 +38,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
     const { groupName, groupAvatar } = route.params;
     const navigation = useNavigation<ChatScreenNavigationProp>();
     const behaviour = useBehaviour();
+    const insets = useSafeAreaInsets();
     const { messages, sendMessage, onReact, loading, error } = useChatViewModel();
     const [inputText, setInputText] = useState('');
     const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
@@ -50,6 +52,20 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
     const inputTextRef = useRef<TextInputType>(null);
     const flatListRef = useRef<FlatList>(null);
     const previousMessageCountRef = useRef(0);
+    const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+    useEffect(() => {
+        const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+        const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+        const showListener = Keyboard.addListener(showEvent, () => setKeyboardVisible(true));
+        const hideListener = Keyboard.addListener(hideEvent, () => setKeyboardVisible(false));
+
+        return () => {
+            showListener.remove();
+            hideListener.remove();
+        };
+    }, []);
 
     useEffect(() => {
         const currentCount = messages.length;
@@ -158,32 +174,31 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <StatusBar backgroundColor={theme.statusBarBackground} />
-            <KeyboardAvoidingView
-                style={styles.keyboardAvoiding}
-                behavior={behaviour}
-            >
-                <View
-                    style={styles.container}>
+        <KeyboardAvoidingView
+            style={styles.keyboardAvoiding}
+            behavior={behaviour}
+            keyboardVerticalOffset={0}
+        >
+            <View style={[styles.safeArea, { paddingTop: insets.top }]}>
+                <StatusBar backgroundColor={theme.statusBarBackground} />
+                {/* Header - Outside the inner container to stay at top */}
+                <Surface style={styles.header} elevation={2}>
+                    <IconButton iconColor={theme.white} icon="arrow-left" size={24} onPress={() => {
+                        navigation.pop();
+                    }} />
+                    {groupAvatar && (
+                        <Image source={{ uri: groupAvatar }} style={styles.avatar} />
+                    )}
+                    <View style={styles.headerInfo}>
+                        <Text style={styles.groupName}>{groupName}</Text>
+                    </View>
+                    <IconButton iconColor={theme.white} icon="phone" size={24} onPress={() => { }} />
+                    <IconButton iconColor={theme.white} icon="dots-vertical" size={24} onPress={() => { }} />
+                </Surface>
+
+                <View style={styles.container}>
                     <View style={styles.inner}>
-
-                        {/* Header */}
-                        <Surface style={styles.header} elevation={2}>
-                            <IconButton iconColor={theme.white} icon="arrow-left" size={24} onPress={() => {
-                                navigation.pop();
-                            }} />
-                            {groupAvatar && (
-                                <Image source={{ uri: groupAvatar }} style={styles.avatar} />
-                            )}
-                            <View style={styles.headerInfo}>
-                                <Text style={styles.groupName}>{groupName}</Text>
-                            </View>
-                            <IconButton iconColor={theme.white} icon="phone" size={24} onPress={() => { }} />
-                            <IconButton iconColor={theme.white} icon="dots-vertical" size={24} onPress={() => { }} />
-                        </Surface>
-
-                        <View style={styles.contentContainer}>
+                        <View style={[styles.contentContainer, loading && styles.centerContainer]}>
                             {loading ? (
                                 <ActivityIndicator size="large" color={theme.primary} />
                             ) : (
@@ -247,7 +262,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                             />
                         )}
 
-                        <Surface style={styles.inputContainer} elevation={3}>
+                        <Surface style={[styles.inputContainer, { paddingBottom: keyboardVisible ? (Platform.OS === 'ios' ? 0 : 4) : insets.bottom + 4 }]} elevation={3}>
                             <IconButton
                                 icon="emoticon-happy-outline"
                                 size={24}
@@ -264,6 +279,8 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                                 dense
                                 outlineStyle={styles.inputOutline}
                                 showSoftInputOnFocus={true}
+                                returnKeyType="send"
+                                onSubmitEditing={handleSend}
                             />
                             {inputText.trim() ? (
                                 <IconButton
@@ -300,8 +317,8 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                         }
                     </View>
                 </View>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+            </View>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -403,8 +420,10 @@ const createStyles = (colors: Theme) => StyleSheet.create({
     },
     contentContainer: {
         flex: 1,
+    },
+    centerContainer: {
         justifyContent: 'center',
-    }
+    },
 });
 
 export default ChatScreen;
