@@ -1,4 +1,4 @@
-import { Message } from "../../domain/models/Message";
+import { Message } from "../models/Message";
 
 export interface ChatRepository {
     getInitialMessages(): Promise<Message[]>;

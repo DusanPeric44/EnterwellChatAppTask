@@ -1,4 +1,4 @@
-import { ChatRepository } from "../../data/repositories/ChatRepository";
+import { ChatRepository } from "../repositories/ChatRepository";
 import { Message } from "../models/Message";
 
 export type SendMessageInput = Omit<

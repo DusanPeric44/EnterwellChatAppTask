@@ -1,4 +1,4 @@
-import { ChatRepository } from "../../data/repositories/ChatRepository";
+import { ChatRepository } from "../repositories/ChatRepository";
 import { ChatError } from "../errors/ChatError";
 import { Message } from "../models/Message";
 
@@ -14,7 +14,25 @@ export function getMessages(repository: ChatRepository) {
                 unsubscribe,
             };
         } catch (error) {
-            throw error as ChatError;
+            const chatError = toChatError(error);
+            throw chatError;
         }
     };
+}
+
+function toChatError(error: unknown): ChatError {
+    if (!error) {
+        return { type: "unknown" };
+    }
+
+    const candidate = error as ChatError;
+    if (candidate.type) {
+        return candidate;
+    }
+
+    if (error instanceof Error) {
+        return { type: "unknown", message: error.message };
+    }
+
+    return { type: "unknown" };
 }

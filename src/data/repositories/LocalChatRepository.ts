@@ -1,5 +1,5 @@
 import { Message } from "../../domain/models/Message";
-import { ChatRepository } from "./ChatRepository";
+import { ChatRepository } from "../../domain/repositories/ChatRepository";
 import messagesData from "../sources/localMessages.json";
 
 export class LocalChatRepository implements ChatRepository {

@@ -1,20 +1,18 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { Message } from "../../domain/models/Message";
-import { LocalChatRepository } from "../../data/repositories/LocalChatRepository";
-import { ChatRepository } from "../../data/repositories/ChatRepository";
+import { ChatRepository } from "../../domain/repositories/ChatRepository";
 import { ReactionType } from "../../domain/enums/ReactionType";
 import { addReaction } from "../../domain/useCases/addReaction";
 import { getMessages } from "../../domain/useCases/getMessages";
 import { sendMessage } from "../../domain/useCases/sendMessage";
+import { ChatError } from "../../domain/errors/ChatError";
 
 
 const useChatViewModel = (
-    repo?: ChatRepository
+    repository: ChatRepository
 ) => {
-    // Ovjde zamijeniti LocalChatRepository sa RemoteChatRepository za API funkcionalnost
-    const repository = useMemo(() => repo ?? new LocalChatRepository(), [repo]);
     const [messages, setMessages] = useState<Message[]>([]);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<ChatError | null>(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -26,30 +24,38 @@ const useChatViewModel = (
 
         const init = async () => {
             setLoading(true);
-            const { initialMessages, unsubscribe } =
-                await getMessages(repository)(msg => {
-                    if (isCancelled) return;
+            setError(null);
+            try {
+                const { initialMessages, unsubscribe } =
+                    await getMessages(repository)(msg => {
+                        if (isCancelled) return;
 
-                    if (!isReady) {
-                        bufferedMessages.push(msg);
-                    } else {
-                        setMessages(prev => {
-                            if (prev.some(m => m.id === msg.id)) return prev;
-                            return [...prev, msg];
-                        });
-                    }
-                });
+                        if (!isReady) {
+                            bufferedMessages.push(msg);
+                        } else {
+                            setMessages(prev => {
+                                if (prev.some(m => m.id === msg.id)) return prev;
+                                return [...prev, msg];
+                            });
+                        }
+                    });
 
-            if (isCancelled) {
-                unsubscribe();
-                return;
+                if (isCancelled) {
+                    unsubscribe();
+                    return;
+                }
+
+                unsubscribeFn = unsubscribe;
+
+                setMessages([...initialMessages, ...bufferedMessages]);
+                isReady = true;
+                setLoading(false);
+            } catch (e) {
+                if (!isCancelled) {
+                    setError(e as ChatError);
+                    setLoading(false);
+                }
             }
-
-            unsubscribeFn = unsubscribe;
-
-            setMessages([...initialMessages, ...bufferedMessages]);
-            isReady = true;
-            setLoading(false);
         };
 
         init();

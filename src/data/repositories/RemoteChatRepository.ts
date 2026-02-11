@@ -1,9 +1,9 @@
-import { ApiError } from "../errors/ApiError";
 import { ChatError } from "../../domain/errors/ChatError";
 import { Message } from "../../domain/models/Message";
 import { apiClient } from "../api/apiClient";
 import { ENDPOINTS } from "../api/endpoints";
-import { ChatRepository } from "./ChatRepository";
+import { ChatRepository } from "../../domain/repositories/ChatRepository";
+import { ApiError } from "../errors/ApiError";
 
 
 export class RemoteChatRepository implements ChatRepository {
@@ -57,11 +57,22 @@ export class RemoteChatRepository implements ChatRepository {
 
     private mapError(error: unknown): ChatError {
         if (error instanceof ApiError) {
-            if (!error.status) return { type: 'network' };
-            if (error.status === 401) return { type: 'unauthorized' };
-            if (error.status === 404) return { type: 'not_found' };
+            if (!error.status) {
+                return { type: "network" };
+            }
+            if (error.status === 401) {
+                return { type: "unauthorized" };
+            }
+            if (error.status === 404) {
+                return { type: "not_found" };
+            }
+            return { type: "unknown", message: error.message };
         }
 
-        return { type: 'unknown' };
+        if (error instanceof Error) {
+            return { type: "unknown", message: error.message };
+        }
+
+        return { type: "unknown" };
     }
 }

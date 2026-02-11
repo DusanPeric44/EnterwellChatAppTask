@@ -1,4 +1,4 @@
-import { ChatRepository } from "../../data/repositories/ChatRepository";
+import { ChatRepository } from "../repositories/ChatRepository";
 import { ReactionType } from "../enums/ReactionType";
 import { Message } from "../models/Message";
 

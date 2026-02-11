@@ -30,6 +30,8 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { emojiData, EmojiPicker } from '@hiraku-ai/react-native-emoji-picker';
 import { useTheme } from '../theme/ThemeContext';
 import { Theme } from '../theme/colors';
+import { ChatError } from '../../domain/errors/ChatError';
+import { LocalChatRepository } from '../../data/repositories/LocalChatRepository';
 
 type ChatScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Chat'>
 type Props = NativeStackScreenProps<RootStackParamList, 'Chat'>;
@@ -39,7 +41,8 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
     const navigation = useNavigation<ChatScreenNavigationProp>();
     const behaviour = useBehaviour();
     const insets = useSafeAreaInsets();
-    const { messages, sendMessage, onReact, loading, error } = useChatViewModel();
+    const repository = useMemo(() => new LocalChatRepository(), []);
+    const { messages, sendMessage, onReact, loading, error } = useChatViewModel(repository);
     const [inputText, setInputText] = useState('');
     const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
     const [replyingTo, setReplyingTo] = useState<Message | null>(null);
@@ -153,7 +156,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
             index,
             viewPosition: 0.5
         });
-    }, [messages]);
+    }, [messages, messageById]);
 
     const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
@@ -204,7 +207,7 @@ const ChatScreen: React.FC<Props> = ({ route }) => {
                             ) : (
                                 <>
                                     {error ? (
-                                        <Text style={styles.errorText}>Error: {error}</Text>
+                                        <Text style={styles.errorText}>{getErrorMessage(error)}</Text>
                                     ) : (
                                         <FlatList
                                             ref={flatListRef}
@@ -425,5 +428,21 @@ const createStyles = (colors: Theme) => StyleSheet.create({
         justifyContent: 'center',
     },
 });
+
+function getErrorMessage(error: ChatError): string {
+    if (error.type === "network") {
+        return "Network error. Check your connection.";
+    }
+    if (error.type === "unauthorized") {
+        return "You are not authorized.";
+    }
+    if (error.type === "not_found") {
+        return "Chat not found.";
+    }
+    if (error.type === "unknown" && error.message) {
+        return error.message;
+    }
+    return "Unknown error.";
+}
 
 export default ChatScreen;

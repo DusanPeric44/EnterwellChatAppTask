@@ -1,4 +1,4 @@
-import { ChatRepository } from './ChatRepository';
+import { ChatRepository } from '../../domain/repositories/ChatRepository';
 import { Message } from '../../domain/models/Message';
 
 export class MockChatRepository implements ChatRepository {

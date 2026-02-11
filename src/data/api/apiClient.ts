@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { API_URL, WS_URL } from '@env';
+import { ApiError } from '../errors/ApiError';
 
 const API_TIMEOUT = 10000;
 
@@ -35,9 +36,11 @@ class ApiClient {
         this.client.interceptors.response.use(
             response => response,
             error => {
-                // Centralizovani error handling
                 console.error('[API ERROR]', error?.response || error);
-                return Promise.reject(error);
+                const status = error?.response?.status as number | undefined;
+                const message = error?.message ?? 'Unknown API error';
+                const apiError = new ApiError(status, message);
+                return Promise.reject(apiError);
             }
         );
     }
